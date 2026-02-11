@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>회원 관리 - Admin</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .admin-header {
+      background-color: var(--bg-secondary);
+      border-bottom: 2px solid var(--accent-danger);
+      padding: var(--spacing-md) 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .admin-logo {
+      color: var(--accent-danger);
+      text-shadow: var(--shadow-neon-pink);
+    }
+
+    .admin-badge {
+      background-color: var(--accent-danger);
+      color: white;
+      padding: 4px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 700;
+      margin-left: var(--spacing-sm);
+    }
+
+    .main-content {
+      padding: var(--spacing-xl) 0;
+      min-height: calc(100vh - 200px);
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .filters-section {
+      background-color: var(--bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      border: 1px solid var(--border-color);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .filter-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .search-box {
+      display: flex;
+      gap: var(--spacing-sm);
+    }
+
+    .search-box .form-input {
+      flex: 1;
+    }
+
+    .users-table-section {
+      background-color: var(--bg-secondary);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+    }
+
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--spacing-lg);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .table-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .bulk-actions {
+      display: flex;
+      gap: var(--spacing-sm);
+      align-items: center;
+    }
+
+    .bulk-actions select {
+      padding: 8px 16px;
+    }
+
+    .table th {
+      background-color: var(--bg-tertiary);
+      font-size: 13px;
+    }
+
+    .user-cell {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--bg-primary);
+    }
+
+    .user-info {
+      flex: 1;
+    }
+
+    .user-name {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .user-email {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: var(--spacing-xs);
+    }
+
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition-fast);
+      font-size: 14px;
+    }
+
+    .icon-btn.view {
+      background-color: rgba(0, 212, 255, 0.2);
+      color: var(--accent-secondary);
+    }
+
+    .icon-btn.view:hover {
+      background-color: var(--accent-secondary);
+      color: white;
+    }
+
+    .icon-btn.edit {
+      background-color: rgba(0, 255, 136, 0.2);
+      color: var(--accent-primary);
+    }
+
+    .icon-btn.edit:hover {
+      background-color: var(--accent-primary);
+      color: var(--bg-primary);
+    }
+
+    .icon-btn.ban {
+      background-color: rgba(255, 0, 110, 0.2);
+      color: var(--accent-danger);
+    }
+
+    .icon-btn.ban:hover {
+      background-color: var(--accent-danger);
+      color: white;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-lg);
+    }
+
+    .page-btn {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-tertiary);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition-fast);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .page-btn:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+
+    .page-btn.active {
+      background-color: var(--accent-primary);
+      border-color: var(--accent-primary);
+      color: var(--bg-primary);
+    }
+
+    /* 모달 스타일 */
+    .modal-body {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .detail-row {
+      display: flex;
+      padding: var(--spacing-md);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      width: 120px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+
+    .detail-value {
+      flex: 1;
+      color: var(--text-primary);
+    }
+
+    .point-adjust-form {
+      display: flex;
+      gap: var(--spacing-md);
+      margin-top: var(--spacing-md);
+    }
+
+    .point-adjust-form input {
+      flex: 1;
+    }
+
+    @media (max-width: 1199px) {
+      .filter-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 767px) {
+      .filter-row {
+        grid-template-columns: 1fr;
+      }
+
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-md);
+      }
+
+      .table-container {
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 관리자 헤더 -->
+  <header class="admin-header">
+    <div class="container">
+      <div class="header-content">
+        <div>
+          <a href="admin-dashboard.html" class="logo admin-logo">⚙️ PGP Admin</a>
+          <span class="admin-badge">ADMIN</span>
+        </div>
+        <nav class="nav">
+          <a href="admin-dashboard.html">대시보드</a>
+          <a href="admin-users.html">회원 관리</a>
+          <a href="admin-withdrawals.html">출금 관리</a>
+          <a href="admin-game-settings.html">게임 설정</a>
+          <a href="admin-statistics.html">통계</a>
+        </nav>
+        <div class="user-info">
+          <span style="color: var(--text-secondary); margin-right: var(--spacing-md);">
+            관리자: admin
+          </span>
+          <a href="admin-login.html" class="btn btn-sm btn-danger">로그아웃</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 메인 컨텐츠 -->
+  <main class="main-content">
+    <div class="container">
+      <div class="page-header">
+        <h1>회원 관리</h1>
+        <div style="display: flex; gap: var(--spacing-md);">
+          <button class="btn btn-secondary">
+            📥 엑셀 다운로드
+          </button>
+        </div>
+      </div>
+
+      <!-- 필터 섹션 -->
+      <div class="filters-section">
+        <div class="filter-row">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">상태</label>
+            <select class="form-select">
+              <option value="">전체</option>
+              <option value="active">활성</option>
+              <option value="pending">승인대기</option>
+              <option value="banned">밴</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">가입일</label>
+            <select class="form-select">
+              <option value="">전체</option>
+              <option value="today">오늘</option>
+              <option value="week">최근 7일</option>
+              <option value="month">최근 30일</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">정렬</label>
+            <select class="form-select">
+              <option value="latest">최신순</option>
+              <option value="oldest">오래된순</option>
+              <option value="points_high">포인트 높은순</option>
+              <option value="points_low">포인트 낮은순</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">검색</label>
+            <div class="search-box">
+              <input type="text" class="form-input" placeholder="아이디, 이름, 이메일">
+              <button class="btn btn-primary">검색</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 회원 테이블 -->
+      <div class="users-table-section">
+        <div class="table-header">
+          <h3 class="table-title">전체 회원 (1,248명)</h3>
+          <div class="bulk-actions">
+            <label style="color: var(--text-secondary); font-size: 14px;">
+              <input type="checkbox" id="selectAll" style="margin-right: 8px;">
+              전체 선택
+            </label>
+            <select class="form-select">
+              <option value="">일괄 작업</option>
+              <option value="activate">활성화</option>
+              <option value="ban">밴</option>
+              <option value="delete">삭제</option>
+            </select>
+            <button class="btn btn-sm btn-secondary">적용</button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th style="width: 40px;">
+                  <input type="checkbox">
+                </th>
+                <th>회원정보</th>
+                <th>보유포인트</th>
+                <th>상태</th>
+                <th>가입일</th>
+                <th>최종접속</th>
+                <th style="text-align: center;">관리</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <input type="checkbox">
+                </td>
+                <td>
+                  <div class="user-cell">
+                    <div class="user-avatar">HG</div>
+                    <div class="user-info">
+                      <div class="user-name">user123</div>
+                      <div class="user-email">hong@email.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td style="font-weight: 700; color: var(--accent-primary);">150,000원</td>
+                <td><span class="badge badge-success">활성</span></td>
+                <td>2025.02.01</td>
+                <td>2025.02.06 14:30</td>
+                <td>
+                  <div class="action-buttons" style="justify-content: center;">
+                    <button class="icon-btn view" onclick="viewUser('user123')" title="상세보기">👁</button>
+                    <button class="icon-btn edit" onclick="editPoints('user123')" title="포인트조정">💰</button>
+                    <button class="icon-btn ban" onclick="banUser('user123')" title="밴">🚫</button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <input type="checkbox">
+                </td>
+                <td>
+                  <div class="user-cell">
+                    <div class="user-avatar">KC</div>
+                    <div class="user-info">
+                      <div class="user-name">player456</div>
+                      <div class="user-email">kim@email.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td style="font-weight: 700; color: var(--accent-primary);">75,000원</td>
+                <td><span class="badge badge-success">활성</span></td>
+                <td>2025.01.28</td>
+                <td>2025.02.06 12:15</td>
+                <td>
+                  <div class="action-buttons" style="justify-content: center;">
+                    <button class="icon-btn view" onclick="viewUser('player456')" title="상세보기">👁</button>
+                    <button class="icon-btn edit" onclick="editPoints('player456')" title="포인트조정">💰</button>
+                    <button class="icon-btn ban" onclick="banUser('player456')" title="밴">🚫</button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <input type="checkbox">
+                </td>
+                <td>
+                  <div class="user-cell">
+                    <div class="user-avatar">LY</div>
+                    <div class="user-info">
+                      <div class="user-name">game789</div>
+                      <div class="user-email">lee@email.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td style="font-weight: 700; color: var(--text-muted);">0원</td>
+                <td><span class="badge badge-warning">승인대기</span></td>
+                <td>2025.02.06</td>
+                <td>-</td>
+                <td>
+                  <div class="action-buttons" style="justify-content: center;">
+                    <button class="icon-btn view" onclick="viewUser('game789')" title="상세보기">👁</button>
+                    <button class="btn btn-sm btn-primary" onclick="approveUser('game789')">승인</button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <input type="checkbox">
+                </td>
+                <td>
+                  <div class="user-cell">
+                    <div class="user-avatar" style="background: gray;">PJ</div>
+                    <div class="user-info">
+                      <div class="user-name">banned001</div>
+                      <div class="user-email">park@email.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td style="font-weight: 700; color: var(--text-muted);">0원</td>
+                <td><span class="badge badge-danger">밴</span></td>
+                <td>2025.01.15</td>
+                <td>2025.02.03</td>
+                <td>
+                  <div class="action-buttons" style="justify-content: center;">
+                    <button class="icon-btn view" onclick="viewUser('banned001')" title="상세보기">👁</button>
+                    <button class="btn btn-sm btn-success" onclick="unbanUser('banned001')">해제</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 페이지네이션 -->
+        <div class="pagination">
+          <button class="page-btn">◀</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <button class="page-btn">4</button>
+          <button class="page-btn">5</button>
+          <button class="page-btn">▶</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 회원 상세 모달 -->
+  <div class="modal-overlay" id="userDetailModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">회원 상세 정보</h3>
+      </div>
+      <div class="modal-body">
+        <div class="detail-row">
+          <div class="detail-label">아이디</div>
+          <div class="detail-value">user123</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">이름</div>
+          <div class="detail-value">홍길동</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">이메일</div>
+          <div class="detail-value">hong@email.com</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">전화번호</div>
+          <div class="detail-value">010-1234-5678</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">보유 포인트</div>
+          <div class="detail-value" style="color: var(--accent-primary); font-weight: 700;">150,000원</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">상태</div>
+          <div class="detail-value"><span class="badge badge-success">활성</span></div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">가입일</div>
+          <div class="detail-value">2025.02.01 10:30:25</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">최종 접속</div>
+          <div class="detail-value">2025.02.06 14:30:10</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">총 베팅 횟수</div>
+          <div class="detail-value">324회</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">총 베팅액</div>
+          <div class="detail-value">3,240,000원</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">총 수익</div>
+          <div class="detail-value" style="color: var(--accent-primary);">+250,000원</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('userDetailModal')">닫기</button>
+        <button class="btn btn-primary" onclick="editPoints('user123')">포인트 조정</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 포인트 조정 모달 -->
+  <div class="modal-overlay" id="pointEditModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">포인트 조정</h3>
+      </div>
+      <div class="modal-body">
+        <div class="detail-row">
+          <div class="detail-label">회원</div>
+          <div class="detail-value">user123 (홍길동)</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">현재 포인트</div>
+          <div class="detail-value" style="color: var(--accent-primary); font-weight: 700;">150,000원</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">조정 유형</label>
+          <select class="form-select" id="adjustType">
+            <option value="add">포인트 지급</option>
+            <option value="subtract">포인트 차감</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">금액</label>
+          <input type="number" class="form-input" placeholder="금액 입력" min="0" step="1000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">사유</label>
+          <textarea class="form-input" rows="3" placeholder="조정 사유를 입력하세요"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('pointEditModal')">취소</button>
+        <button class="btn btn-primary">적용</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 푸터 -->
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 Private Game Platform Admin. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    function viewUser(userId) {
+      document.getElementById('userDetailModal').classList.add('active');
+    }
+
+    function editPoints(userId) {
+      closeModal('userDetailModal');
+      document.getElementById('pointEditModal').classList.add('active');
+    }
+
+    function banUser(userId) {
+      if (confirm(`${userId} 회원을 밴 처리하시겠습니까?`)) {
+        alert('밴 처리되었습니다.');
+      }
+    }
+
+    function unbanUser(userId) {
+      if (confirm(`${userId} 회원의 밴을 해제하시겠습니까?`)) {
+        alert('밴이 해제되었습니다.');
+      }
+    }
+
+    function approveUser(userId) {
+      if (confirm(`${userId} 회원의 가입을 승인하시겠습니까?`)) {
+        alert('승인되었습니다.');
+      }
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    // 모달 외부 클릭 시 닫기
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.classList.remove('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

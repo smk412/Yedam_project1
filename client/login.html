@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로그인 - Private Game Platform</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 배경 애니메이션 효과 */
+    body::before {
+      content: '';
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0, 212, 255, 0.1) 0%, transparent 50%);
+      animation: drift 20s ease-in-out infinite;
+    }
+
+    @keyframes drift {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(-50px, -50px); }
+    }
+
+    .login-container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 420px;
+      padding: 20px;
+    }
+
+    .login-box {
+      background-color: var(--bg-secondary);
+      border-radius: var(--radius-xl);
+      padding: var(--spacing-xxl);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border-color);
+      animation: fadeIn 0.5s ease;
+    }
+
+    .logo-section {
+      text-align: center;
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .logo-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto var(--spacing-md);
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: bold;
+      box-shadow: var(--shadow-neon-green);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .logo-text {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .logo-subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .form-input {
+      height: 50px;
+      font-size: 16px;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-lg);
+      font-size: 14px;
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .remember-me input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: var(--accent-primary);
+    }
+
+    .forgot-password {
+      color: var(--accent-secondary);
+      text-decoration: none;
+      transition: var(--transition-fast);
+    }
+
+    .forgot-password:hover {
+      color: var(--accent-primary);
+    }
+
+    .btn-login {
+      width: 100%;
+      height: 50px;
+      font-size: 18px;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: var(--spacing-xl) 0;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background-color: var(--border-color);
+    }
+
+    .divider::before {
+      margin-right: var(--spacing-md);
+    }
+
+    .divider::after {
+      margin-left: var(--spacing-md);
+    }
+
+    .signup-link {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .signup-link a {
+      color: var(--accent-primary);
+      text-decoration: none;
+      font-weight: 600;
+      transition: var(--transition-fast);
+    }
+
+    .signup-link a:hover {
+      color: var(--accent-secondary);
+      text-decoration: underline;
+    }
+
+    /* 에러 메시지 스타일 */
+    .error-message {
+      background-color: rgba(255, 0, 110, 0.1);
+      border: 1px solid var(--accent-danger);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-md);
+      margin-bottom: var(--spacing-lg);
+      color: var(--accent-danger);
+      font-size: 14px;
+      display: none;
+      animation: shake 0.3s;
+    }
+
+    .error-message.active {
+      display: block;
+    }
+
+    @media (max-width: 767px) {
+      .login-box {
+        padding: var(--spacing-lg);
+      }
+
+      .logo-text {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-box">
+      <!-- 로고 섹션 -->
+      <div class="logo-section">
+        <div class="logo-icon">🎰</div>
+        <h1 class="logo-text">PGP</h1>
+        <p class="logo-subtitle">Private Game Platform</p>
+      </div>
+
+      <!-- 에러 메시지 -->
+      <div class="error-message" id="errorMessage">
+        아이디 또는 비밀번호가 올바르지 않습니다.
+      </div>
+
+      <!-- 로그인 폼 -->
+      <form id="loginForm">
+        <div class="form-group">
+          <label class="form-label" for="username">아이디</label>
+          <input 
+            type="text" 
+            id="username" 
+            class="form-input" 
+            placeholder="아이디를 입력하세요"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">비밀번호</label>
+          <input 
+            type="password" 
+            id="password" 
+            class="form-input" 
+            placeholder="비밀번호를 입력하세요"
+            required
+          >
+        </div>
+
+        <div class="form-actions">
+          <label class="remember-me">
+            <input type="checkbox" id="rememberMe">
+            <span>자동 로그인</span>
+          </label>
+          <a href="#" class="forgot-password">비밀번호 찾기</a>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-login">로그인</button>
+      </form>
+
+      <div class="divider">또는</div>
+
+      <div class="signup-link">
+        아직 계정이 없으신가요? <a href="signup.html">회원가입</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById('loginForm');
+    const errorMessage = document.getElementById('errorMessage');
+
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const rememberMe = document.getElementById('rememberMe').checked;
+
+      // 여기서 실제 로그인 API 호출
+      // 예시로 에러 메시지 표시
+      // errorMessage.classList.add('active');
+      
+      // 성공 시 대시보드로 이동
+      console.log('로그인 시도:', { username, password, rememberMe });
+      // window.location.href = '/dashboard.html';
+    });
+  </script>
+</body>
+</html>

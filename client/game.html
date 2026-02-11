@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>홀짝 게임 - Private Game Platform</title>
+    <link rel="stylesheet" href="../common.css" />
+    <link rel="stylesheet" href="css/game.css" />
+  </head>
+  <body>
+    <!-- 헤더 -->
+    <header class="header">
+      <div class="container">
+        <div class="header-content">
+          <a href="dashboard.html" class="logo">🎰 PGP</a>
+          <nav class="nav">
+            <a href="dashboard.html">대시보드</a>
+            <a href="game.html">게임</a>
+            <a href="withdrawal.html">출금</a>
+            <a href="mypage.html">마이페이지</a>
+          </nav>
+          <div class="user-info">
+            <div class="points-display">
+              💰 <span id="headerPoints">150,000</span>원
+            </div>
+            <a href="login.html" class="btn btn-sm btn-outline">로그아웃</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="main-content">
+      <div class="container">
+        <div class="game-container">
+          <!-- 게임 헤더 -->
+          <div class="game-header">
+            <h1 class="game-title">🎲 홀짝 게임</h1>
+            <div class="game-status">● 게임 운영 중</div>
+          </div>
+
+          <!-- 포인트 정보 -->
+          <div class="points-info">
+            <div class="current-points">현재 보유 포인트</div>
+            <div class="points-value" id="currentPoints">150,000원</div>
+          </div>
+
+          <!-- 게임 보드 -->
+          <div class="game-board">
+            <!-- 베팅 금액 입력 -->
+            <div class="bet-amount-section">
+              <label class="form-label">베팅 금액</label>
+              <div class="bet-input-group">
+                <input
+                  type="number"
+                  id="betAmount"
+                  class="form-input"
+                  placeholder="금액 입력"
+                  min="1000"
+                  max="100000"
+                  step="1000"
+                  value="10000"
+                />
+              </div>
+              <div class="quick-bet-buttons">
+                <button class="quick-bet-btn" onclick="setBetAmount(1000)">
+                  1천
+                </button>
+                <button class="quick-bet-btn" onclick="setBetAmount(5000)">
+                  5천
+                </button>
+                <button class="quick-bet-btn" onclick="setBetAmount(10000)">
+                  1만
+                </button>
+                <button class="quick-bet-btn" onclick="setBetAmount(50000)">
+                  5만
+                </button>
+                <button class="quick-bet-btn" onclick="setBetAmount(100000)">
+                  10만
+                </button>
+              </div>
+            </div>
+
+            <!-- 홀짝 선택 -->
+            <div class="choice-section">
+              <label class="form-label">홀짝 선택</label>
+              <div class="choice-buttons">
+                <div
+                  class="choice-btn"
+                  id="oddBtn"
+                  onclick="selectChoice('odd')"
+                >
+                  <div class="icon">1️⃣</div>
+                  <div class="label">홀</div>
+                </div>
+                <div
+                  class="choice-btn"
+                  id="evenBtn"
+                  onclick="selectChoice('even')"
+                >
+                  <div class="icon">2️⃣</div>
+                  <div class="label">짝</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 결과 표시 -->
+            <div class="result-display" id="resultDisplay">
+              <div class="dice-container" id="diceContainer">?</div>
+              <div class="result-text">주사위를 굴려보세요!</div>
+            </div>
+
+            <!-- 베팅 버튼 -->
+            <button
+              class="btn btn-primary bet-button"
+              id="betButton"
+              onclick="placeBet()"
+            >
+              베팅하기
+            </button>
+
+            <!-- 게임 정보 -->
+            <div class="game-info">
+              💡 배당률: 1.95배 | 최소 베팅: 1,000원 | 최대 베팅: 100,000원
+            </div>
+          </div>
+
+          <!-- 최근 베팅 결과 -->
+          <div class="recent-results">
+            <h3>최근 베팅 결과</h3>
+            <div class="result-list" id="resultList">
+              <!-- JavaScript로 동적 생성 -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2025 Private Game Platform. All rights reserved.</p>
+        <p>문의: support@pgp.com</p>
+      </div>
+    </footer>
+
+    <script>
+      let currentPoints = 150000;
+      let selectedChoice = null;
+      let isPlaying = false;
+      let recentResults = [];
+
+      // 베팅 금액 설정
+      function setBetAmount(amount) {
+        document.getElementById("betAmount").value = amount;
+      }
+
+      // 홀짝 선택
+      function selectChoice(choice) {
+        selectedChoice = choice;
+        document.getElementById("oddBtn").classList.remove("selected");
+        document.getElementById("evenBtn").classList.remove("selected");
+
+        if (choice === "odd") {
+          document.getElementById("oddBtn").classList.add("selected");
+        } else {
+          document.getElementById("evenBtn").classList.add("selected");
+        }
+      }
+
+      // 베팅 실행
+      function placeBet() {
+        if (isPlaying) return;
+
+        const betAmount = parseInt(document.getElementById("betAmount").value);
+
+        // 유효성 검사
+        if (!betAmount || betAmount < 1000 || betAmount > 100000) {
+          alert("베팅 금액을 확인해주세요. (최소: 1,000원, 최대: 100,000원)");
+          return;
+        }
+
+        if (!selectedChoice) {
+          alert("홀 또는 짝을 선택해주세요.");
+          return;
+        }
+
+        if (betAmount > currentPoints) {
+          alert("보유 포인트가 부족합니다.");
+          return;
+        }
+
+        isPlaying = true;
+        document.getElementById("betButton").disabled = true;
+
+        // 주사위 굴리기 애니메이션
+        rollDice(betAmount);
+      }
+
+      // 주사위 굴리기
+      function rollDice(betAmount) {
+        const diceContainer = document.getElementById("diceContainer");
+        const resultDisplay = document.getElementById("resultDisplay");
+
+        diceContainer.classList.add("rolling");
+
+        let count = 0;
+        const rollInterval = setInterval(() => {
+          diceContainer.textContent = Math.floor(Math.random() * 6) + 1;
+          count++;
+
+          if (count >= 20) {
+            clearInterval(rollInterval);
+
+            // 최종 결과
+            const finalResult = Math.floor(Math.random() * 6) + 1;
+            diceContainer.textContent = finalResult;
+            diceContainer.classList.remove("rolling");
+
+            // 결과 판정
+            const isOdd = finalResult % 2 === 1;
+            const userChoice = selectedChoice;
+            const isWin =
+              (isOdd && userChoice === "odd") ||
+              (!isOdd && userChoice === "even");
+
+            setTimeout(() => {
+              showResult(finalResult, isWin, betAmount);
+            }, 500);
+          }
+        }, 100);
+      }
+
+      // 결과 표시
+      function showResult(number, isWin, betAmount) {
+        const resultDisplay = document.getElementById("resultDisplay");
+        const isOdd = number % 2 === 1;
+
+        // 포인트 계산
+        let pointChange = 0;
+        if (isWin) {
+          pointChange = Math.floor(betAmount * 1.95);
+          currentPoints += pointChange;
+        } else {
+          pointChange = -betAmount;
+          currentPoints += pointChange;
+        }
+
+        // 결과 메시지 생성
+        const resultHTML = `
+        <div class="dice-container">${number}</div>
+        <div class="result-text">${isOdd ? "홀" : "짝"} 나왔습니다!</div>
+        <div class="result-message ${isWin ? "win" : "lose"}">
+          ${isWin ? "🎉 승리!" : "😢 패배"}
+        </div>
+        <div class="result-amount ${isWin ? "win" : "lose"}">
+          ${pointChange > 0 ? "+" : ""}${pointChange.toLocaleString()}원
+        </div>
+      `;
+
+        resultDisplay.innerHTML = resultHTML;
+
+        // 포인트 업데이트
+        updatePoints();
+
+        // 최근 결과에 추가
+        addRecentResult(
+          number,
+          isOdd ? "홀" : "짝",
+          selectedChoice === "odd" ? "홀" : "짝",
+          isWin,
+          betAmount,
+          pointChange,
+        );
+
+        // 버튼 활성화
+        setTimeout(() => {
+          isPlaying = false;
+          document.getElementById("betButton").disabled = false;
+        }, 2000);
+      }
+
+      // 포인트 업데이트
+      function updatePoints() {
+        document.getElementById("currentPoints").textContent =
+          currentPoints.toLocaleString() + "원";
+        document.getElementById("headerPoints").textContent =
+          currentPoints.toLocaleString();
+      }
+
+      // 최근 결과 추가
+      function addRecentResult(
+        number,
+        result,
+        choice,
+        isWin,
+        betAmount,
+        pointChange,
+      ) {
+        const time = new Date().toLocaleTimeString("ko-KR");
+        const resultItem = {
+          time,
+          number,
+          result,
+          choice,
+          isWin,
+          betAmount,
+          pointChange,
+        };
+
+        recentResults.unshift(resultItem);
+        if (recentResults.length > 10) {
+          recentResults.pop();
+        }
+
+        renderRecentResults();
+      }
+
+      // 최근 결과 렌더링
+      function renderRecentResults() {
+        const resultList = document.getElementById("resultList");
+
+        if (recentResults.length === 0) {
+          resultList.innerHTML =
+            '<div class="empty-state">아직 베팅 내역이 없습니다.</div>';
+          return;
+        }
+
+        resultList.innerHTML = recentResults
+          .map(
+            (item) => `
+        <div class="result-item">
+          <div class="result-item-info">
+            <div class="result-dice">${item.number}</div>
+            <div>
+              <div style="font-size: 12px; color: var(--text-muted);">${item.time}</div>
+              <div style="font-size: 14px; color: var(--text-secondary);">
+                ${item.choice} 선택 · 결과: ${item.result}
+              </div>
+            </div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 12px; color: var(--text-secondary);">
+              ${item.betAmount.toLocaleString()}원
+            </div>
+            <div style="font-size: 18px; font-weight: 700; color: ${item.isWin ? "var(--accent-primary)" : "var(--accent-danger)"};">
+              ${item.pointChange > 0 ? "+" : ""}${item.pointChange.toLocaleString()}원
+            </div>
+          </div>
+        </div>
+      `,
+          )
+          .join("");
+      }
+
+      // 초기화
+      renderRecentResults();
+    </script>
+  </body>
+</html>

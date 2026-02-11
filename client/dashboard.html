@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>대시보드 - Private Game Platform</title>
+    <link rel="stylesheet" href="../common.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+  </head>
+  <body>
+    <!-- 헤더 -->
+    <header class="header">
+      <div class="container">
+        <div class="header-content">
+          <a href="dashboard.html" class="logo">🎰 PGP</a>
+          <nav class="nav">
+            <a href="dashboard.html">대시보드</a>
+            <a href="game.html">게임</a>
+            <a href="withdrawal.html">출금</a>
+            <a href="mypage.html">마이페이지</a>
+          </nav>
+          <div class="user-info">
+            <div class="points-display">💰 150,000원</div>
+            <a href="login.html" class="btn btn-sm btn-outline">로그아웃</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="main-content">
+      <div class="container">
+        <!-- 환영 섹션 -->
+        <div class="welcome-section">
+          <h1>
+            안녕하세요,
+            <span style="color: var(--accent-primary)">홍길동</span>님!
+          </h1>
+          <p>오늘도 행운이 함께하기를 바랍니다.</p>
+
+          <div class="quick-actions">
+            <a href="game.html" class="btn btn-primary action-btn">
+              <span class="icon">🎲</span>
+              <span>게임 시작</span>
+            </a>
+            <a href="withdrawal.html" class="btn btn-secondary action-btn">
+              <span class="icon">💸</span>
+              <span>출금 신청</span>
+            </a>
+            <a href="mypage.html" class="btn btn-outline action-btn">
+              <span class="icon">📊</span>
+              <span>전체 내역</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- 통계 카드 -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">보유 포인트</div>
+            <div class="stat-value">150,000원</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-label">오늘 베팅 횟수</div>
+            <div class="stat-value">8회</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-label">오늘 베팅액</div>
+            <div class="stat-value">80,000원</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-label">오늘 수익</div>
+            <div class="stat-value">+15,000원</div>
+          </div>
+        </div>
+
+        <!-- 최근 베팅 내역 -->
+        <div class="recent-bets">
+          <div class="section-header">
+            <h2 class="section-title">최근 베팅 내역</h2>
+            <a href="mypage.html" class="view-all">전체보기 →</a>
+          </div>
+
+          <div class="bet-list">
+            <div class="bet-item">
+              <div class="bet-info">
+                <div class="bet-time">2025.02.06 14:35</div>
+                <div class="bet-details">
+                  홀짝 게임 · 홀 선택 · 결과: 3 (홀)
+                </div>
+              </div>
+              <div class="bet-result">
+                <div class="bet-amount">베팅: 10,000원</div>
+                <div class="bet-profit win">+19,500원</div>
+              </div>
+            </div>
+
+            <div class="bet-item">
+              <div class="bet-info">
+                <div class="bet-time">2025.02.06 14:32</div>
+                <div class="bet-details">
+                  홀짝 게임 · 짝 선택 · 결과: 5 (홀)
+                </div>
+              </div>
+              <div class="bet-result">
+                <div class="bet-amount">베팅: 10,000원</div>
+                <div class="bet-profit lose">-10,000원</div>
+              </div>
+            </div>
+
+            <div class="bet-item">
+              <div class="bet-info">
+                <div class="bet-time">2025.02.06 14:28</div>
+                <div class="bet-details">
+                  홀짝 게임 · 홀 선택 · 결과: 1 (홀)
+                </div>
+              </div>
+              <div class="bet-result">
+                <div class="bet-amount">베팅: 5,000원</div>
+                <div class="bet-profit win">+9,750원</div>
+              </div>
+            </div>
+
+            <div class="bet-item">
+              <div class="bet-info">
+                <div class="bet-time">2025.02.06 14:20</div>
+                <div class="bet-details">
+                  홀짝 게임 · 짝 선택 · 결과: 4 (짝)
+                </div>
+              </div>
+              <div class="bet-result">
+                <div class="bet-amount">베팅: 20,000원</div>
+                <div class="bet-profit win">+39,000원</div>
+              </div>
+            </div>
+
+            <div class="bet-item">
+              <div class="bet-info">
+                <div class="bet-time">2025.02.06 14:15</div>
+                <div class="bet-details">
+                  홀짝 게임 · 홀 선택 · 결과: 6 (짝)
+                </div>
+              </div>
+              <div class="bet-result">
+                <div class="bet-amount">베팅: 10,000원</div>
+                <div class="bet-profit lose">-10,000원</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2025 Private Game Platform. All rights reserved.</p>
+        <p>문의: support@pgp.com</p>
+      </div>
+    </footer>
+
+    <scirpt> fetch() </scirpt>
+  </body>
+</html>

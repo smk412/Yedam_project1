@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>게임 목록 - Private Game Platform</title>
+    <link rel="stylesheet" href="../common.css" />
+    <link rel="stylesheet" href="./css/games-list.css" />
+  </head>
+  <body>
+    <!-- 헤더 -->
+    <header class="header">
+      <div class="container">
+        <div class="header-content">
+          <a href="dashboard.html" class="logo">🎰 PGP</a>
+          <nav class="nav">
+            <a href="dashboard.html">대시보드</a>
+            <a href="games-list.html">게임</a>
+            <a href="withdrawal.html">출금</a>
+            <a href="mypage.html">마이페이지</a>
+          </nav>
+          <div class="user-info">
+            <div class="points-display">💰 150,000원</div>
+            <a href="login.html" class="btn btn-sm btn-outline">로그아웃</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="main-content">
+      <div class="container">
+        <!-- 페이지 헤더 -->
+        <div class="page-header">
+          <h1 class="page-title">🎮 게임 목록</h1>
+          <p class="page-description">다양한 게임을 즐겨보세요!</p>
+        </div>
+
+        <!-- 통계 배너 -->
+        <div class="stats-banner">
+          <div class="stat-item">
+            <div class="stat-value">2</div>
+            <div class="stat-label">전체 게임</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">2</div>
+            <div class="stat-label">운영 중</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">324</div>
+            <div class="stat-label">오늘 플레이</div>
+          </div>
+        </div>
+
+        <!-- 필터 섹션 -->
+        <div class="filter-section">
+          <span class="filter-label">필터:</span>
+          <div class="filter-tabs">
+            <div class="filter-tab active" onclick="filterGames('all')">
+              전체
+            </div>
+            <div class="filter-tab" onclick="filterGames('active')">
+              운영 중
+            </div>
+            <div class="filter-tab" onclick="filterGames('inactive')">
+              점검 중
+            </div>
+          </div>
+        </div>
+
+        <!-- 게임 그리드 -->
+        <div class="games-grid" id="gamesGrid">
+          <!-- 게임 카드 1: Dice (활성) -->
+          <div
+            class="game-card"
+            data-game-no="1"
+            data-status="active"
+            onclick="playGame(1, 'Dice')"
+          >
+            <div class="game-header">
+              <div>
+                <div class="game-icon">🎲</div>
+              </div>
+              <div class="game-status active">● 운영 중</div>
+            </div>
+
+            <h3 class="game-name">Dice</h3>
+            <p class="game-description">주사위 홀짝 게임</p>
+
+            <div class="game-info">
+              <div class="info-item">
+                <div class="info-label">기본 배당률</div>
+                <div class="info-value">1.95배</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">게임 번호</div>
+                <div class="info-value">#1</div>
+              </div>
+            </div>
+
+            <div class="game-actions" onclick="event.stopPropagation()">
+              <button
+                class="btn btn-primary btn-play"
+                onclick="playGame(1, 'Dice')"
+              >
+                <span>🎮</span>
+                <span>게임 시작</span>
+              </button>
+              <button
+                class="btn btn-details"
+                onclick="showGameDetails(1)"
+                title="상세보기"
+              >
+                ℹ️
+              </button>
+            </div>
+          </div>
+
+          <!-- 게임 카드 2: Roulette (활성) -->
+          <div
+            class="game-card"
+            data-game-no="2"
+            data-status="active"
+            onclick="playGame(2, 'Roulette')"
+          >
+            <div class="game-header">
+              <div>
+                <div class="game-icon">🎡</div>
+              </div>
+              <div class="game-status active">● 운영 중</div>
+            </div>
+
+            <h3 class="game-name">Roulette</h3>
+            <p class="game-description">룰렛 숫자 맞추기</p>
+
+            <div class="game-info">
+              <div class="info-item">
+                <div class="info-label">기본 배당률</div>
+                <div class="info-value">2.50배</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">게임 번호</div>
+                <div class="info-value">#2</div>
+              </div>
+            </div>
+
+            <div class="game-actions" onclick="event.stopPropagation()">
+              <button
+                class="btn btn-primary btn-play"
+                onclick="playGame(2, 'Roulette')"
+              >
+                <span>🎮</span>
+                <span>게임 시작</span>
+              </button>
+              <button
+                class="btn btn-details"
+                onclick="showGameDetails(2)"
+                title="상세보기"
+              >
+                ℹ️
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 빈 상태 (필터링 시 표시) -->
+        <div class="empty-state" id="emptyState" style="display: none">
+          <div class="icon">🎮</div>
+          <h3>게임이 없습니다</h3>
+          <p>해당 조건에 맞는 게임을 찾을 수 없습니다.</p>
+        </div>
+      </div>
+    </main>
+
+    <!-- 게임 상세 모달 -->
+    <div class="modal-overlay" id="gameDetailModal">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title" id="modalGameName">게임 상세 정보</h3>
+        </div>
+        <div class="modal-body">
+          <div style="text-align: center; margin-bottom: var(--spacing-lg)">
+            <div
+              style="font-size: 80px; margin-bottom: var(--spacing-md)"
+              id="modalGameIcon"
+            >
+              🎲
+            </div>
+            <div class="badge badge-success" id="modalGameStatus">운영 중</div>
+          </div>
+
+          <div
+            style="
+              padding: var(--spacing-md);
+              background-color: var(--bg-tertiary);
+              border-radius: var(--radius-md);
+              margin-bottom: var(--spacing-lg);
+            "
+          >
+            <p
+              id="modalGameDescription"
+              style="margin: 0; color: var(--text-secondary); line-height: 1.6"
+            >
+              주사위 홀짝 게임
+            </p>
+          </div>
+
+          <div style="display: grid; gap: var(--spacing-md)">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                padding: var(--spacing-md);
+                background-color: var(--bg-tertiary);
+                border-radius: var(--radius-md);
+              "
+            >
+              <span style="color: var(--text-secondary)">게임 번호</span>
+              <span style="font-weight: 700" id="modalGameNo">#1</span>
+            </div>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                padding: var(--spacing-md);
+                background-color: var(--bg-tertiary);
+                border-radius: var(--radius-md);
+              "
+            >
+              <span style="color: var(--text-secondary)">기본 배당률</span>
+              <span
+                style="font-weight: 700; color: var(--accent-primary)"
+                id="modalBaseRate"
+                >1.95배</span
+              >
+            </div>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                padding: var(--spacing-md);
+                background-color: var(--bg-tertiary);
+                border-radius: var(--radius-md);
+              "
+            >
+              <span style="color: var(--text-secondary)">등록일</span>
+              <span style="font-weight: 700" id="modalCreatedAt"
+                >2025.02.06</span
+              >
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" onclick="closeModal()">닫기</button>
+          <button class="btn btn-primary" id="modalPlayBtn">게임 시작</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 푸터 -->
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2025 Private Game Platform. All rights reserved.</p>
+        <p>문의: support@pgp.com</p>
+      </div>
+    </footer>
+
+    <script>
+      // 게임 데이터 (실제로는 API에서 가져옴)
+      const gamesData = [
+        {
+          gameNo: 1,
+          gameName: "Dice",
+          description: "주사위 홀짝 게임",
+          baseRate: 1.95,
+          isActive: 1,
+          createdAt: "2025-02-06",
+          icon: "🎲",
+        },
+        {
+          gameNo: 2,
+          gameName: "Roulette",
+          description: "룰렛 숫자 맞추기",
+          baseRate: 2.5,
+          isActive: 1,
+          createdAt: "2025-02-06",
+          icon: "🎡",
+        },
+      ];
+
+      // 게임 필터링
+      function filterGames(status) {
+        // 탭 활성화
+        document.querySelectorAll(".filter-tab").forEach((tab) => {
+          tab.classList.remove("active");
+        });
+        event.target.classList.add("active");
+
+        const gameCards = document.querySelectorAll(".game-card");
+        const emptyState = document.getElementById("emptyState");
+        let visibleCount = 0;
+
+        gameCards.forEach((card) => {
+          const cardStatus = card.dataset.status;
+
+          if (status === "all") {
+            card.style.display = "block";
+            visibleCount++;
+          } else if (status === "active" && cardStatus === "active") {
+            card.style.display = "block";
+            visibleCount++;
+          } else if (status === "inactive" && cardStatus === "inactive") {
+            card.style.display = "block";
+            visibleCount++;
+          } else {
+            card.style.display = "none";
+          }
+        });
+
+        // 빈 상태 표시
+        if (visibleCount === 0) {
+          emptyState.style.display = "block";
+          document.querySelector(".games-grid").style.display = "none";
+        } else {
+          emptyState.style.display = "none";
+          document.querySelector(".games-grid").style.display = "grid";
+        }
+      }
+
+      // 게임 시작
+      function playGame(gameNo, gameName) {
+        // 실제로는 해당 게임 페이지로 이동
+        console.log(`게임 시작: ${gameName} (${gameNo})`);
+
+        if (gameName === "Dice") {
+          window.location.href = "game.html";
+        } else {
+          alert(`${gameName} 게임 페이지는 준비 중입니다.`);
+        }
+      }
+
+      // 게임 상세 보기
+      function showGameDetails(gameNo) {
+        const game = gamesData.find((g) => g.gameNo === gameNo);
+
+        if (!game) return;
+
+        // 모달 내용 업데이트
+        document.getElementById("modalGameName").textContent = game.gameName;
+        document.getElementById("modalGameIcon").textContent = game.icon;
+        document.getElementById("modalGameDescription").textContent =
+          game.description;
+        document.getElementById("modalGameNo").textContent = "#" + game.gameNo;
+        document.getElementById("modalBaseRate").textContent =
+          game.baseRate + "배";
+        document.getElementById("modalCreatedAt").textContent = game.createdAt;
+
+        const statusBadge = document.getElementById("modalGameStatus");
+        if (game.isActive === 1) {
+          statusBadge.className = "badge badge-success";
+          statusBadge.textContent = "운영 중";
+        } else {
+          statusBadge.className = "badge badge-danger";
+          statusBadge.textContent = "점검 중";
+        }
+
+        // 게임 시작 버튼
+        document.getElementById("modalPlayBtn").onclick = () => {
+          closeModal();
+          playGame(game.gameNo, game.gameName);
+        };
+
+        // 모달 표시
+        document.getElementById("gameDetailModal").classList.add("active");
+      }
+
+      // 모달 닫기
+      function closeModal() {
+        document.getElementById("gameDetailModal").classList.remove("active");
+      }
+
+      // 모달 외부 클릭 시 닫기
+      document
+        .getElementById("gameDetailModal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) {
+            closeModal();
+          }
+        });
+
+      // 실제 환경에서는 API로 게임 목록 로드
+      // fetchGames();
+      // async function fetchGames() {
+      //   try {
+      //     const response = await fetch('/api/games');
+      //     const games = await response.json();
+      //     renderGames(games);
+      //   } catch (error) {
+      //     console.error('게임 목록 로드 실패:', error);
+      //   }
+      // }
+    </script>
+  </body>
+</html>

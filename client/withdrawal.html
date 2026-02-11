@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>출금 신청 - Private Game Platform</title>
+    <link rel="stylesheet" href="../common.css" />
+    <link rel="stylesheet" href="css/withdrawal.css" />
+  </head>
+  <body>
+    <!-- 헤더 -->
+    <header class="header">
+      <div class="container">
+        <div class="header-content">
+          <a href="dashboard.html" class="logo">🎰 PGP</a>
+          <nav class="nav">
+            <a href="dashboard.html">대시보드</a>
+            <a href="game.html">게임</a>
+            <a href="withdrawal.html">출금</a>
+            <a href="mypage.html">마이페이지</a>
+          </nav>
+          <div class="user-info">
+            <div class="points-display">💰 150,000원</div>
+            <a href="login.html" class="btn btn-sm btn-outline">로그아웃</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="main-content">
+      <div class="container">
+        <div class="withdrawal-container">
+          <!-- 페이지 헤더 -->
+          <div class="page-header">
+            <h1 class="page-title">출금 신청</h1>
+            <p class="page-description">보유 포인트를 출금하실 수 있습니다</p>
+          </div>
+
+          <!-- 포인트 요약 -->
+          <div class="points-summary">
+            <div class="summary-card">
+              <div class="summary-label">보유 포인트</div>
+              <div class="summary-value">150,000원</div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-label">출금 가능 금액</div>
+              <div class="summary-value" id="availableAmount">140,000원</div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-label">출금 진행 중</div>
+              <div class="summary-value" style="color: var(--accent-warning)">
+                10,000원
+              </div>
+            </div>
+          </div>
+
+          <!-- 출금 신청 폼 -->
+          <div class="withdrawal-form-section">
+            <h2 class="section-title">출금 정보 입력</h2>
+
+            <div class="notice-box">
+              <div class="notice-title">⚠️ 출금 안내</div>
+              <ul class="notice-list">
+                <li>최소 출금 금액은 10,000원입니다.</li>
+                <li>출금 신청 후 승인까지 최대 24시간이 소요됩니다.</li>
+                <li>출금 수수료는 없습니다.</li>
+                <li>계좌 정보를 정확히 입력해주세요.</li>
+              </ul>
+            </div>
+
+            <form id="withdrawalForm">
+              <div class="form-group">
+                <label class="form-label" for="withdrawalAmount"
+                  >출금 금액 *</label
+                >
+                <div class="amount-input-group">
+                  <input
+                    type="number"
+                    id="withdrawalAmount"
+                    class="form-input"
+                    placeholder="출금할 금액을 입력하세요"
+                    min="10000"
+                    step="1000"
+                    required
+                  />
+                  <button
+                    type="button"
+                    class="max-btn"
+                    onclick="setMaxAmount()"
+                  >
+                    전액 출금
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="bankName">은행명 *</label>
+                <select id="bankName" class="form-select" required>
+                  <option value="">선택하세요</option>
+                  <option value="KB국민은행">KB국민은행</option>
+                  <option value="신한은행">신한은행</option>
+                  <option value="우리은행">우리은행</option>
+                  <option value="하나은행">하나은행</option>
+                  <option value="NH농협은행">NH농협은행</option>
+                  <option value="IBK기업은행">IBK기업은행</option>
+                  <option value="SC제일은행">SC제일은행</option>
+                  <option value="카카오뱅크">카카오뱅크</option>
+                  <option value="토스뱅크">토스뱅크</option>
+                  <option value="케이뱅크">케이뱅크</option>
+                </select>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="accountNumber"
+                    >계좌번호 *</label
+                  >
+                  <input
+                    type="text"
+                    id="accountNumber"
+                    class="form-input"
+                    placeholder="- 없이 입력"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="accountHolder">예금주 *</label>
+                  <input
+                    type="text"
+                    id="accountHolder"
+                    class="form-input"
+                    placeholder="예금주명 입력"
+                    required
+                  />
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary submit-btn">
+                출금 신청하기
+              </button>
+            </form>
+          </div>
+
+          <!-- 출금 내역 -->
+          <div class="withdrawal-history">
+            <h2 class="section-title">출금 내역</h2>
+
+            <div class="filter-tabs">
+              <div class="filter-tab active" onclick="filterHistory('all')">
+                전체
+              </div>
+              <div class="filter-tab" onclick="filterHistory('pending')">
+                대기중
+              </div>
+              <div class="filter-tab" onclick="filterHistory('approved')">
+                승인
+              </div>
+              <div class="filter-tab" onclick="filterHistory('rejected')">
+                거부
+              </div>
+            </div>
+
+            <div id="historyList">
+              <div class="history-item">
+                <div class="history-info">
+                  <div class="history-date">2025.02.05 15:30</div>
+                  <div class="history-details">
+                    <span class="badge badge-warning">대기중</span>
+                  </div>
+                  <div class="history-account">
+                    KB국민은행 123-456-789012 (홍길동)
+                  </div>
+                </div>
+                <div class="history-amount">10,000원</div>
+                <div class="badge badge-warning">대기중</div>
+              </div>
+
+              <div class="history-item">
+                <div class="history-info">
+                  <div class="history-date">2025.02.03 10:20</div>
+                  <div class="history-details">
+                    <span class="badge badge-success">승인</span>
+                  </div>
+                  <div class="history-account">
+                    신한은행 987-654-321098 (홍길동)
+                  </div>
+                </div>
+                <div class="history-amount">50,000원</div>
+                <div class="badge badge-success">승인</div>
+              </div>
+
+              <div class="history-item">
+                <div class="history-info">
+                  <div class="history-date">2025.02.01 14:15</div>
+                  <div class="history-details">
+                    <span class="badge badge-success">승인</span>
+                  </div>
+                  <div class="history-account">
+                    카카오뱅크 123-45-67890 (홍길동)
+                  </div>
+                </div>
+                <div class="history-amount">30,000원</div>
+                <div class="badge badge-success">승인</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2025 Private Game Platform. All rights reserved.</p>
+        <p>문의: support@pgp.com</p>
+      </div>
+    </footer>
+
+    <script>
+      const availableAmount = 140000;
+
+      // 전액 출금 설정
+      function setMaxAmount() {
+        document.getElementById("withdrawalAmount").value = availableAmount;
+      }
+
+      // 출금 신청 폼 제출
+      document
+        .getElementById("withdrawalForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const amount = parseInt(
+            document.getElementById("withdrawalAmount").value,
+          );
+          const bankName = document.getElementById("bankName").value;
+          const accountNumber = document.getElementById("accountNumber").value;
+          const accountHolder = document.getElementById("accountHolder").value;
+
+          // 유효성 검사
+          if (amount < 10000) {
+            alert("최소 출금 금액은 10,000원입니다.");
+            return;
+          }
+
+          if (amount > availableAmount) {
+            alert("출금 가능 금액을 초과했습니다.");
+            return;
+          }
+
+          // 실제로는 API 호출
+          console.log("출금 신청:", {
+            amount,
+            bankName,
+            accountNumber,
+            accountHolder,
+          });
+
+          alert(
+            "출금 신청이 완료되었습니다.\n승인까지 최대 24시간이 소요됩니다.",
+          );
+
+          // 폼 초기화
+          this.reset();
+        });
+
+      // 내역 필터링
+      function filterHistory(status) {
+        // 탭 활성화
+        document.querySelectorAll(".filter-tab").forEach((tab) => {
+          tab.classList.remove("active");
+        });
+        event.target.classList.add("active");
+
+        // 실제로는 API 호출하여 필터링된 데이터 가져오기
+        console.log("필터:", status);
+      }
+    </script>
+  </body>
+</html>

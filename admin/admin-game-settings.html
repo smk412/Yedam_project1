@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게임 설정 - Admin</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .admin-header {
+      background-color: var(--bg-secondary);
+      border-bottom: 2px solid var(--accent-danger);
+      padding: var(--spacing-md) 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .admin-logo {
+      color: var(--accent-danger);
+      text-shadow: var(--shadow-neon-pink);
+    }
+
+    .admin-badge {
+      background-color: var(--accent-danger);
+      color: white;
+      padding: 4px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 700;
+      margin-left: var(--spacing-sm);
+    }
+
+    .main-content {
+      padding: var(--spacing-xl) 0;
+      min-height: calc(100vh - 200px);
+    }
+
+    .settings-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .page-title {
+      font-size: 32px;
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .settings-section {
+      background-color: var(--bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-xl);
+      border: 1px solid var(--border-color);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-lg);
+      padding-bottom: var(--spacing-md);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-sm) var(--spacing-md);
+      background-color: var(--bg-tertiary);
+      border-radius: var(--radius-md);
+      font-size: 14px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--accent-primary);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .status-indicator.off .status-dot {
+      background-color: var(--accent-danger);
+      animation: none;
+    }
+
+    .setting-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--spacing-lg);
+      background-color: var(--bg-tertiary);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .setting-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .setting-info {
+      flex: 1;
+    }
+
+    .setting-label {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .setting-description {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .setting-control {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 60px;
+      height: 30px;
+      background-color: var(--bg-hover);
+      border-radius: 15px;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    .toggle-switch.active {
+      background-color: var(--accent-primary);
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 24px;
+      height: 24px;
+      background-color: white;
+      border-radius: 50%;
+      transition: var(--transition-fast);
+    }
+
+    .toggle-switch.active::after {
+      left: 33px;
+    }
+
+    .value-input {
+      width: 150px;
+      padding: var(--spacing-sm) var(--spacing-md);
+      background-color: var(--bg-primary);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+      transition: var(--transition-fast);
+    }
+
+    .value-input:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: var(--shadow-neon-green);
+    }
+
+    .value-label {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .save-button-section {
+      display: flex;
+      gap: var(--spacing-md);
+      justify-content: flex-end;
+      margin-top: var(--spacing-xl);
+    }
+
+    .history-section {
+      background-color: var(--bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      border: 1px solid var(--border-color);
+    }
+
+    .history-item {
+      padding: var(--spacing-md);
+      background-color: var(--bg-tertiary);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--spacing-sm);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .history-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .history-time {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .history-details {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .history-admin {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .alert-box {
+      background-color: rgba(255, 214, 0, 0.1);
+      border: 1px solid var(--accent-warning);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-md);
+      margin-bottom: var(--spacing-lg);
+      display: flex;
+      align-items: flex-start;
+      gap: var(--spacing-md);
+    }
+
+    .alert-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .alert-content {
+      flex: 1;
+    }
+
+    .alert-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent-warning);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .alert-text {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    @media (max-width: 767px) {
+      .setting-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-md);
+      }
+
+      .setting-control {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .value-input {
+        width: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 관리자 헤더 -->
+  <header class="admin-header">
+    <div class="container">
+      <div class="header-content">
+        <div>
+          <a href="admin-dashboard.html" class="logo admin-logo">⚙️ PGP Admin</a>
+          <span class="admin-badge">ADMIN</span>
+        </div>
+        <nav class="nav">
+          <a href="admin-dashboard.html">대시보드</a>
+          <a href="admin-users.html">회원 관리</a>
+          <a href="admin-withdrawals.html">출금 관리</a>
+          <a href="admin-game-settings.html">게임 설정</a>
+          <a href="admin-statistics.html">통계</a>
+        </nav>
+        <div class="user-info">
+          <span style="color: var(--text-secondary); margin-right: var(--spacing-md);">
+            관리자: admin
+          </span>
+          <a href="admin-login.html" class="btn btn-sm btn-danger">로그아웃</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 메인 컨텐츠 -->
+  <main class="main-content">
+    <div class="container">
+      <div class="settings-container">
+        <h1 class="page-title">게임 설정</h1>
+
+        <!-- 알림 박스 -->
+        <div class="alert-box">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-content">
+            <div class="alert-title">설정 변경 시 주의사항</div>
+            <div class="alert-text">
+              게임 설정 변경은 즉시 반영됩니다. 배당률이나 베팅 한도 변경 시 사용자에게 공지하시는 것을 권장합니다.
+            </div>
+          </div>
+        </div>
+
+        <!-- 게임 활성화 설정 -->
+        <div class="settings-section">
+          <div class="section-header">
+            <h2 class="section-title">게임 운영 상태</h2>
+            <div class="status-indicator" id="gameStatusIndicator">
+              <div class="status-dot"></div>
+              <span>운영 중</span>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-label">🎮 게임 활성화</div>
+              <div class="setting-description">
+                게임을 비활성화하면 모든 사용자가 게임에 참여할 수 없습니다.
+              </div>
+            </div>
+            <div class="setting-control">
+              <div class="toggle-switch active" id="gameToggle" onclick="toggleGame(this)"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 게임 설정 -->
+        <div class="settings-section">
+          <div class="section-header">
+            <h2 class="section-title">게임 규칙 설정</h2>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-label">💰 승리 배당률</div>
+              <div class="setting-description">
+                게임 승리 시 지급되는 배당률입니다. (예: 1.95 = 베팅액 x 1.95배)
+              </div>
+            </div>
+            <div class="setting-control">
+              <input type="number" class="value-input" value="1.95" step="0.01" min="1.00" max="10.00" id="payoutRate">
+              <span class="value-label">배</span>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-label">📊 하우스 엣지</div>
+              <div class="setting-description">
+                플랫폼 수수료율입니다. (현재: 2.5%)
+              </div>
+            </div>
+            <div class="setting-control">
+              <input type="number" class="value-input" value="2.5" step="0.1" min="0" max="50" id="houseEdge">
+              <span class="value-label">%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 베팅 한도 설정 -->
+        <div class="settings-section">
+          <div class="section-header">
+            <h2 class="section-title">베팅 한도 설정</h2>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-label">⬇️ 최소 베팅 금액</div>
+              <div class="setting-description">
+                한 번에 베팅할 수 있는 최소 금액입니다.
+              </div>
+            </div>
+            <div class="setting-control">
+              <input type="number" class="value-input" value="1000" step="1000" min="100" id="minBet">
+              <span class="value-label">원</span>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-label">⬆️ 최대 베팅 금액</div>
+              <div class="setting-description">
+                한 번에 베팅할 수 있는 최대 금액입니다.
+              </div>
+            </div>
+            <div class="setting-control">
+              <input type="number" class="value-input" value="100000" step="10000" min="1000" id="maxBet">
+              <span class="value-label">원</span>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-label">🎯 1일 최대 베팅 횟수</div>
+              <div class="setting-description">
+                회원 1명이 하루에 베팅할 수 있는 최대 횟수입니다. (0 = 무제한)
+              </div>
+            </div>
+            <div class="setting-control">
+              <input type="number" class="value-input" value="0" step="10" min="0" id="maxBetsPerDay">
+              <span class="value-label">회</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 게임 설명 -->
+        <div class="settings-section">
+          <div class="section-header">
+            <h2 class="section-title">게임 안내</h2>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">게임 규칙 설명</label>
+            <textarea 
+              class="form-input" 
+              rows="5" 
+              id="gameDescription"
+              placeholder="사용자에게 표시될 게임 규칙을 입력하세요"
+            >홀짝 게임은 1부터 6까지의 주사위 숫자 중 홀수 또는 짝수를 맞추는 게임입니다.
+
+• 홀수: 1, 3, 5
+• 짝수: 2, 4, 6
+
+예측이 맞으면 베팅 금액 x 배당률만큼 포인트를 획득합니다.</textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">공지사항</label>
+            <textarea 
+              class="form-input" 
+              rows="3" 
+              id="gameNotice"
+              placeholder="게임 페이지 상단에 표시될 공지사항"
+            >행운을 빕니다! 책임감 있는 게임 이용을 부탁드립니다.</textarea>
+          </div>
+        </div>
+
+        <!-- 저장 버튼 -->
+        <div class="save-button-section">
+          <button class="btn btn-outline btn-lg" onclick="resetSettings()">
+            초기화
+          </button>
+          <button class="btn btn-primary btn-lg" onclick="saveSettings()">
+            💾 저장하기
+          </button>
+        </div>
+
+        <!-- 설정 변경 이력 -->
+        <div class="history-section">
+          <div class="section-header">
+            <h3 class="section-title">설정 변경 이력</h3>
+          </div>
+
+          <div class="history-item">
+            <div>
+              <div class="history-time">2025.02.06 15:30</div>
+              <div class="history-details">배당률 변경: 1.90 → 1.95</div>
+              <div class="history-admin">관리자: admin</div>
+            </div>
+            <span class="badge badge-info">변경</span>
+          </div>
+
+          <div class="history-item">
+            <div>
+              <div class="history-time">2025.02.05 10:20</div>
+              <div class="history-details">최대 베팅 금액 변경: 50,000원 → 100,000원</div>
+              <div class="history-admin">관리자: admin</div>
+            </div>
+            <span class="badge badge-info">변경</span>
+          </div>
+
+          <div class="history-item">
+            <div>
+              <div class="history-time">2025.02.04 14:15</div>
+              <div class="history-details">게임 비활성화 → 활성화</div>
+              <div class="history-admin">관리자: admin</div>
+            </div>
+            <span class="badge badge-success">활성화</span>
+          </div>
+
+          <div class="history-item">
+            <div>
+              <div class="history-time">2025.02.03 09:00</div>
+              <div class="history-details">게임 활성화 → 비활성화 (점검)</div>
+              <div class="history-admin">관리자: admin</div>
+            </div>
+            <span class="badge badge-danger">비활성화</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 푸터 -->
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 Private Game Platform Admin. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    function toggleGame(element) {
+      element.classList.toggle('active');
+      const isActive = element.classList.contains('active');
+      const indicator = document.getElementById('gameStatusIndicator');
+      
+      if (isActive) {
+        indicator.innerHTML = '<div class="status-dot"></div><span>운영 중</span>';
+        indicator.classList.remove('off');
+      } else {
+        indicator.innerHTML = '<div class="status-dot"></div><span>점검 중</span>';
+        indicator.classList.add('off');
+      }
+    }
+
+    function saveSettings() {
+      const settings = {
+        gameActive: document.getElementById('gameToggle').classList.contains('active'),
+        payoutRate: parseFloat(document.getElementById('payoutRate').value),
+        houseEdge: parseFloat(document.getElementById('houseEdge').value),
+        minBet: parseInt(document.getElementById('minBet').value),
+        maxBet: parseInt(document.getElementById('maxBet').value),
+        maxBetsPerDay: parseInt(document.getElementById('maxBetsPerDay').value),
+        gameDescription: document.getElementById('gameDescription').value,
+        gameNotice: document.getElementById('gameNotice').value
+      };
+
+      // 유효성 검사
+      if (settings.payoutRate < 1 || settings.payoutRate > 10) {
+        alert('배당률은 1.00 ~ 10.00 사이로 설정해주세요.');
+        return;
+      }
+
+      if (settings.minBet >= settings.maxBet) {
+        alert('최소 베팅 금액은 최대 베팅 금액보다 작아야 합니다.');
+        return;
+      }
+
+      // 실제로는 API 호출
+      console.log('설정 저장:', settings);
+      
+      alert('✅ 설정이 저장되었습니다.');
+    }
+
+    function resetSettings() {
+      if (confirm('모든 설정을 초기값으로 되돌리시겠습니까?')) {
+        document.getElementById('payoutRate').value = 1.95;
+        document.getElementById('houseEdge').value = 2.5;
+        document.getElementById('minBet').value = 1000;
+        document.getElementById('maxBet').value = 100000;
+        document.getElementById('maxBetsPerDay').value = 0;
+        alert('설정이 초기화되었습니다.');
+      }
+    }
+  </script>
+</body>
+</html>
