@@ -4,30 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>홀짝 게임 - Private Game Platform</title>
-    <link rel="stylesheet" href="../common.css" />
     <link rel="stylesheet" href="css/game.css" />
+    <link rel="stylesheet" href="/common.css" />
+    <script src="js/client_common.js"></script>
   </head>
   <body>
     <!-- 헤더 -->
-    <header class="header">
-      <div class="container">
-        <div class="header-content">
-          <a href="dashboard.html" class="logo">🎰 PGP</a>
-          <nav class="nav">
-            <a href="dashboard.html">대시보드</a>
-            <a href="game.html">게임</a>
-            <a href="withdrawal.html">출금</a>
-            <a href="mypage.html">마이페이지</a>
-          </nav>
-          <div class="user-info">
-            <div class="points-display">
-              💰 <span id="headerPoints">150,000</span>원
-            </div>
-            <a href="login.html" class="btn btn-sm btn-outline">로그아웃</a>
-          </div>
-        </div>
-      </div>
-    </header>
+    <div id="header"></div>
 
     <!-- 메인 컨텐츠 -->
     <main class="main-content">
@@ -42,7 +25,7 @@
           <!-- 포인트 정보 -->
           <div class="points-info">
             <div class="current-points">현재 보유 포인트</div>
-            <div class="points-value" id="currentPoints">150,000원</div>
+            <div class="points-value point-value" id="currentPoints"></div>
           </div>
 
           <!-- 게임 보드 -->
@@ -145,10 +128,8 @@
     </footer>
 
     <script>
-      let currentPoints = 150000;
       let selectedChoice = null;
       let isPlaying = false;
-      let recentResults = [];
 
       // 베팅 금액 설정
       function setBetAmount(amount) {
@@ -169,23 +150,86 @@
       }
 
       // 베팅 실행
-      function placeBet() {
+      // function placeBet() {
+      //   if (isPlaying) return;
+
+      //   const betAmount = parseInt(document.getElementById("betAmount").value);
+
+      //   // 유효성 검사
+      //   if (!betAmount || betAmount < 1000 || betAmount > 10000000 || betAmount > currentPoints) {
+      //     alert("베팅 금액을 확인해주세요. (최소: 1,000원, 최대: 10,000,000원)");
+      //     return;
+      //   }
+
+      //   if (!selectedChoice) {
+      //     alert("홀 또는 짝을 선택해주세요.");
+      //     return;
+      //   }
+
+      //   if (betAmount > currentPoints) {
+      //     alert("보유 포인트가 부족합니다.");
+      //     return;
+      //   }
+
+      //   isPlaying = true;
+      //   document.getElementById("betButton").disabled = true;
+
+      //   // 주사위 굴리기 애니메이션
+      //   rollDice(betAmount);
+      // }
+
+      // function rollDice(betAmount) {
+      //   const diceContainer = document.getElementById("diceContainer");
+      //   const resultDisplay = document.getElementById("resultDisplay");
+
+      //   diceContainer.classList.add("rolling");
+
+      //   let count = 0;
+      //   const rollInterval = setInterval(() => {
+      //     diceContainer.textContent = Math.floor(Math.random() * 6) + 1;
+      //     count++;
+
+      //     if (count >= 20) {
+      //       clearInterval(rollInterval);
+
+      //       // 최종 결과
+      //       const finalResult = Math.floor(Math.random() * 6) + 1;
+      //       diceContainer.textContent = finalResult;
+      //       diceContainer.classList.remove("rolling");
+
+      //       // 결과 판정
+      //       const isOdd = finalResult % 2 === 1;
+      //       const userChoice = selectedChoice;
+      //       const isWin =
+      //         (isOdd && userChoice === "odd") ||
+      //         (!isOdd && userChoice === "even");
+
+      //       setTimeout(() => {
+      //         showResult(finalResult, isWin, betAmount);
+      //       }, 500);
+      //     }
+      //   }, 100);
+      // }
+
+      async function placeBet() {
         if (isPlaying) return;
 
         const betAmount = parseInt(document.getElementById("betAmount").value);
+        // const choice = selectedChoice;
+        const currentPoint = window.userState.point;
 
-        // 유효성 검사
-        if (!betAmount || betAmount < 1000 || betAmount > 100000) {
-          alert("베팅 금액을 확인해주세요. (최소: 1,000원, 최대: 100,000원)");
+        // 1차 프론트 검증 (UX용)
+        if (!betAmount || betAmount < 1000) {
+          alert("최소 베팅 금액은 1,000원입니다.");
           return;
         }
 
-        if (!selectedChoice) {
-          alert("홀 또는 짝을 선택해주세요.");
+        if (!choice) {
+          alert("홀/짝을 선택해주세요.");
           return;
         }
 
-        if (betAmount > currentPoints) {
+        if (betAmount > currentPoint) {
           alert("보유 포인트가 부족합니다.");
           return;
         }
@@ -193,42 +237,77 @@
         isPlaying = true;
         document.getElementById("betButton").disabled = true;
 
-        // 주사위 굴리기 애니메이션
-        rollDice(betAmount);
+        try {
+          const response = await fetch("/games/play", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ betAmount, choice: SelectedChoice }),
+          });
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            alert(result.message);
+            return;
+          }
+
+          //서버 결과 기반 애니메이션 실행
+          rollDiceAnimation(result, betAmount);
+        } catch (err) {
+          console.error(err);
+          alert("서버 오류 발생");
+          resetGameState();
+        }
       }
 
       // 주사위 굴리기
-      function rollDice(betAmount) {
+      function rollDiceAnimation(severResult, betAmount) {
         const diceContainer = document.getElementById("diceContainer");
         const resultDisplay = document.getElementById("resultDisplay");
 
         diceContainer.classList.add("rolling");
 
         let count = 0;
-        const rollInterval = setInterval(() => {
+
+        const interval = setInterval(() => {
           diceContainer.textContent = Math.floor(Math.random() * 6) + 1;
           count++;
 
-          if (count >= 20) {
-            clearInterval(rollInterval);
+          if (count >= 15) {
+            clearInterval(interval);
 
-            // 최종 결과
-            const finalResult = Math.floor(Math.random() * 6) + 1;
-            diceContainer.textContent = finalResult;
+            //서버에서 받은 진짜 결과 표시
+            diceContainer.textContent = serverResult.dice;
             diceContainer.classList.remove("rolling");
 
-            // 결과 판정
-            const isOdd = finalResult % 2 === 1;
-            const userChoice = selectedChoice;
-            const isWin =
-              (isOdd && userChoice === "odd") ||
-              (!isOdd && userChoice === "even");
-
             setTimeout(() => {
-              showResult(finalResult, isWin, betAmount);
+              showResult(serverResult, betAmount);
             }, 500);
           }
         }, 100);
+      }
+
+      // 결과 표시
+      function showResult(serverResult, betAmount) {
+        const resultDisplay = document.getElementById("resultDisplay");
+
+        const isWin = serverResult.result === 1;
+
+        if (isWin) {
+          resultDisplay.innerHTML = `🎉 승리! +${serverResult.payout.toLocaleString()}원`;
+          resultDisplay.className = "result lose";
+        }
+
+        // 다음 단계에서 point 업데이트 추가 예정
+
+        resetGameState();
+      }
+
+      function resetGameState() {
+        isPlaying = false;
+        document.getElementById("betButton").disabled = false;
       }
 
       // 결과 표시

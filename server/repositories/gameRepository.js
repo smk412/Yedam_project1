@@ -32,4 +32,7 @@ async function insertGame(data) {
   await conn.close();
 }
 
+// 게임 참여
+async function getGameOdds()
+
 module.exports = { findAllGames, insertGame };

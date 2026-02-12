@@ -4,28 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>출금 신청 - Private Game Platform</title>
-    <link rel="stylesheet" href="../common.css" />
     <link rel="stylesheet" href="css/withdrawal.css" />
+    <link rel="stylesheet" href="/common.css" />
+    <script src="js/client_common.js"></script>
   </head>
   <body>
     <!-- 헤더 -->
-    <header class="header">
-      <div class="container">
-        <div class="header-content">
-          <a href="dashboard.html" class="logo">🎰 PGP</a>
-          <nav class="nav">
-            <a href="dashboard.html">대시보드</a>
-            <a href="game.html">게임</a>
-            <a href="withdrawal.html">출금</a>
-            <a href="mypage.html">마이페이지</a>
-          </nav>
-          <div class="user-info">
-            <div class="points-display">💰 150,000원</div>
-            <a href="login.html" class="btn btn-sm btn-outline">로그아웃</a>
-          </div>
-        </div>
-      </div>
-    </header>
+    <div id="header"></div>
 
     <!-- 메인 컨텐츠 -->
     <main class="main-content">
@@ -41,7 +26,7 @@
           <div class="points-summary">
             <div class="summary-card">
               <div class="summary-label">보유 포인트</div>
-              <div class="summary-value">150,000원</div>
+              <div class="summary-value point-value"></div>
             </div>
             <div class="summary-card">
               <div class="summary-label">출금 가능 금액</div>

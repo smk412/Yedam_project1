@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>입금 신청 - Private Game Platform</title>
+    <link rel="stylesheet" href="css/deposit.css" />
+    <link rel="stylesheet" href="/common.css" />
+    <script src="js/client_common.js"></script>
+  </head>
+  <body>
+    <!-- 헤더 -->
+    <div id="header"></div>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="main-content">
+      <div class="container">
+        <div class="deposit-container">
+          <!-- 페이지 헤더 -->
+          <div class="page-header">
+            <h1 class="page-title">입금 신청</h1>
+            <p class="page-description">포인트를 충전하여 게임을 즐겨보세요</p>
+          </div>
+
+          <!-- 계좌 요약 -->
+          <div class="account-summary">
+            <div class="summary-card">
+              <div class="summary-label">현재 보유 포인트</div>
+              <div class="summary-value point-value"></div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-label">입금 대기 중</div>
+              <div class="summary-value" style="color: var(--accent-warning)">
+                50,000원
+              </div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-label">총 입금액 (누적)</div>
+              <div class="summary-value" style="color: var(--accent-secondary)">
+                1,500,000원
+              </div>
+            </div>
+          </div>
+
+          <!-- 입금 신청 폼 -->
+          <div class="deposit-form-section">
+            <h2 class="section-title">입금 정보 입력</h2>
+
+            <!-- 입금 계좌 안내 -->
+            <div class="account-info-box">
+              <div class="account-info-title">
+                <span>🏦</span>
+                <span>입금 계좌 정보</span>
+              </div>
+              <div class="account-detail">
+                <div class="account-label">은행명</div>
+                <div class="account-value">
+                  <span>KB국민은행</span>
+                  <button
+                    class="copy-btn"
+                    onclick="copyToClipboard('KB국민은행')"
+                  >
+                    복사
+                  </button>
+                </div>
+              </div>
+              <div class="account-detail">
+                <div class="account-label">계좌번호</div>
+                <div class="account-value">
+                  <span>123-456-789012</span>
+                  <button
+                    class="copy-btn"
+                    onclick="copyToClipboard('123456789012')"
+                  >
+                    복사
+                  </button>
+                </div>
+              </div>
+              <div class="account-detail">
+                <div class="account-label">예금주</div>
+                <div class="account-value">
+                  <span>(주)피지피</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="notice-box">
+              <div class="notice-title">
+                <span>💡</span>
+                <span>입금 안내</span>
+              </div>
+              <ul class="notice-list">
+                <li>위 계좌로 입금 후 아래 정보를 정확히 입력해주세요.</li>
+                <li>입금자명과 신청자명이 일치해야 합니다.</li>
+                <li>입금 확인 후 승인까지 최대 30분이 소요됩니다.</li>
+                <li>최소 입금 금액은 10,000원입니다.</li>
+                <li>입금 수수료는 없습니다.</li>
+              </ul>
+            </div>
+
+            <form id="depositForm">
+              <div class="form-group">
+                <label class="form-label" for="depositAmount"
+                  >입금 금액 *</label
+                >
+                <div class="amount-input-group">
+                  <input
+                    type="number"
+                    id="depositAmount"
+                    class="form-input"
+                    placeholder="입금할 금액을 입력하세요"
+                    min="10000"
+                    step="1000"
+                    required
+                  />
+                </div>
+                <div class="quick-amount-buttons">
+                  <button
+                    type="button"
+                    class="quick-amount-btn"
+                    onclick="setAmount(10000)"
+                  >
+                    1만원
+                  </button>
+                  <button
+                    type="button"
+                    class="quick-amount-btn"
+                    onclick="setAmount(50000)"
+                  >
+                    5만원
+                  </button>
+                  <button
+                    type="button"
+                    class="quick-amount-btn"
+                    onclick="setAmount(100000)"
+                  >
+                    10만원
+                  </button>
+                  <button
+                    type="button"
+                    class="quick-amount-btn"
+                    onclick="setAmount(500000)"
+                  >
+                    50만원
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="depositorName"
+                    >입금자명 *</label
+                  >
+                  <input
+                    type="text"
+                    id="depositorName"
+                    class="form-input"
+                    placeholder="입금하신 분의 성함"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="depositTime"
+                    >입금 시각 *</label
+                  >
+                  <input
+                    type="datetime-local"
+                    id="depositTime"
+                    class="form-input"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="depositorBank"
+                  >입금 은행 *</label
+                >
+                <select id="depositorBank" class="form-select" required>
+                  <option value="">선택하세요</option>
+                  <option value="KB국민은행">KB국민은행</option>
+                  <option value="신한은행">신한은행</option>
+                  <option value="우리은행">우리은행</option>
+                  <option value="하나은행">하나은행</option>
+                  <option value="NH농협은행">NH농협은행</option>
+                  <option value="IBK기업은행">IBK기업은행</option>
+                  <option value="SC제일은행">SC제일은행</option>
+                  <option value="카카오뱅크">카카오뱅크</option>
+                  <option value="토스뱅크">토스뱅크</option>
+                  <option value="케이뱅크">케이뱅크</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="depositMemo">메모 (선택)</label>
+                <textarea
+                  id="depositMemo"
+                  class="form-input"
+                  rows="3"
+                  placeholder="추가 메모사항이 있으면 입력해주세요"
+                ></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary submit-btn">
+                입금 신청하기
+              </button>
+            </form>
+          </div>
+
+          <!-- 입금 내역 -->
+          <div class="deposit-history">
+            <h2 class="section-title">입금 내역</h2>
+
+            <div class="filter-tabs">
+              <div class="filter-tab active" onclick="filterHistory('all')">
+                전체
+              </div>
+              <div class="filter-tab" onclick="filterHistory('pending')">
+                대기중
+              </div>
+              <div class="filter-tab" onclick="filterHistory('approved')">
+                승인
+              </div>
+              <div class="filter-tab" onclick="filterHistory('rejected')">
+                거부
+              </div>
+            </div>
+
+            <div id="historyList">
+              <div class="history-item" data-status="pending">
+                <div class="history-info">
+                  <div class="history-date">2025.02.06 15:30</div>
+                  <div class="history-details">
+                    <span class="badge badge-warning">대기중</span>
+                  </div>
+                  <div class="history-depositor">
+                    입금자: 홍길동 · KB국민은행
+                  </div>
+                </div>
+                <div class="history-amount">50,000원</div>
+                <div class="badge badge-warning">대기중</div>
+              </div>
+
+              <div class="history-item" data-status="approved">
+                <div class="history-info">
+                  <div class="history-date">2025.02.05 10:20</div>
+                  <div class="history-details">
+                    <span class="badge badge-success">승인</span>
+                  </div>
+                  <div class="history-depositor">입금자: 홍길동 · 신한은행</div>
+                </div>
+                <div class="history-amount">100,000원</div>
+                <div class="badge badge-success">승인</div>
+              </div>
+
+              <div class="history-item" data-status="approved">
+                <div class="history-info">
+                  <div class="history-date">2025.02.03 14:15</div>
+                  <div class="history-details">
+                    <span class="badge badge-success">승인</span>
+                  </div>
+                  <div class="history-depositor">
+                    입금자: 홍길동 · 카카오뱅크
+                  </div>
+                </div>
+                <div class="history-amount">200,000원</div>
+                <div class="badge badge-success">승인</div>
+              </div>
+
+              <div class="history-item" data-status="rejected">
+                <div class="history-info">
+                  <div class="history-date">2025.02.01 09:30</div>
+                  <div class="history-details">
+                    <span class="badge badge-danger">거부</span>
+                  </div>
+                  <div class="history-depositor">
+                    입금자: 김철수 · 우리은행 (입금자명 불일치)
+                  </div>
+                </div>
+                <div class="history-amount">50,000원</div>
+                <div class="badge badge-danger">거부</div>
+              </div>
+            </div>
+
+            <!-- 빈 상태 (필터링 시) -->
+            <div class="empty-state" id="emptyState" style="display: none">
+              <div class="icon">💰</div>
+              <p>해당 내역이 없습니다.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2025 Private Game Platform. All rights reserved.</p>
+        <p>문의: support@pgp.com</p>
+      </div>
+    </footer>
+
+    <script>
+      // 금액 설정
+      function setAmount(amount) {
+        document.getElementById("depositAmount").value = amount;
+      }
+
+      // 클립보드 복사
+      function copyToClipboard(text) {
+        navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            // 토스트 알림 (실제로는 toast 컴포넌트 사용)
+            alert("복사되었습니다: " + text);
+          })
+          .catch((err) => {
+            console.error("복사 실패:", err);
+          });
+      }
+
+      // 입금 신청 폼 제출
+      document
+        .getElementById("depositForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const amount = parseInt(
+            document.getElementById("depositAmount").value,
+          );
+          const depositorName = document.getElementById("depositorName").value;
+          const depositTime = document.getElementById("depositTime").value;
+          const depositorBank = document.getElementById("depositorBank").value;
+          const depositMemo = document.getElementById("depositMemo").value;
+
+          // 유효성 검사
+          if (amount < 10000) {
+            alert("최소 입금 금액은 10,000원입니다.");
+            return;
+          }
+
+          if (!depositorName || !depositTime || !depositorBank) {
+            alert("필수 항목을 모두 입력해주세요.");
+            return;
+          }
+
+          // 실제로는 API 호출
+          const depositData = {
+            type: "DEPOSIT",
+            amount,
+            depositorName,
+            depositTime,
+            depositorBank,
+            memo: depositMemo,
+            status: "PENDING",
+          };
+
+          console.log("입금 신청:", depositData);
+
+          alert(
+            "입금 신청이 완료되었습니다.\n승인까지 최대 30분이 소요됩니다.",
+          );
+
+          // 폼 초기화
+          this.reset();
+        });
+
+      // 내역 필터링
+      function filterHistory(status) {
+        // 탭 활성화
+        document.querySelectorAll(".filter-tab").forEach((tab) => {
+          tab.classList.remove("active");
+        });
+        event.target.classList.add("active");
+
+        const items = document.querySelectorAll(".history-item");
+        const emptyState = document.getElementById("emptyState");
+        let visibleCount = 0;
+
+        items.forEach((item) => {
+          const itemStatus = item.dataset.status;
+
+          if (status === "all") {
+            item.style.display = "flex";
+            visibleCount++;
+          } else if (itemStatus === status) {
+            item.style.display = "flex";
+            visibleCount++;
+          } else {
+            item.style.display = "none";
+          }
+        });
+
+        // 빈 상태 표시
+        if (visibleCount === 0) {
+          emptyState.style.display = "block";
+        } else {
+          emptyState.style.display = "none";
+        }
+      }
+
+      // 현재 시간으로 입금 시각 기본값 설정
+      window.addEventListener("load", function () {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.getElementById("depositTime").value = now
+          .toISOString()
+          .slice(0, 16);
+      });
+    </script>
+  </body>
+</html>

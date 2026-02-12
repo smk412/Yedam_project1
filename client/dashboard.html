@@ -4,28 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>대시보드 - Private Game Platform</title>
-    <link rel="stylesheet" href="../common.css" />
+    <link rel="stylesheet" href="/common.css" />
     <link rel="stylesheet" href="css/dashboard.css" />
+    <script src="js/client_common.js"></script>
   </head>
   <body>
     <!-- 헤더 -->
-    <header class="header">
-      <div class="container">
-        <div class="header-content">
-          <a href="dashboard.html" class="logo">🎰 PGP</a>
-          <nav class="nav">
-            <a href="dashboard.html">대시보드</a>
-            <a href="game.html">게임</a>
-            <a href="withdrawal.html">출금</a>
-            <a href="mypage.html">마이페이지</a>
-          </nav>
-          <div class="user-info">
-            <div class="points-display">💰 150,000원</div>
-            <a href="login.html" class="btn btn-sm btn-outline">로그아웃</a>
-          </div>
-        </div>
-      </div>
-    </header>
+    <div id="header"></div>
 
     <!-- 메인 컨텐츠 -->
     <main class="main-content">
@@ -34,7 +19,8 @@
         <div class="welcome-section">
           <h1>
             안녕하세요,
-            <span style="color: var(--accent-primary)">홍길동</span>님!
+            <span style="color: var(--accent-primary)" id="user-id">홍길동</span
+            >님!
           </h1>
           <p>오늘도 행운이 함께하기를 바랍니다.</p>
 
@@ -58,7 +44,7 @@
         <div class="stats-grid">
           <div class="stat-card">
             <div class="stat-label">보유 포인트</div>
-            <div class="stat-value">150,000원</div>
+            <div class="stat-value point-value">150,000원</div>
           </div>
 
           <div class="stat-card">
@@ -161,7 +147,31 @@
         <p>문의: support@pgp.com</p>
       </div>
     </footer>
+    <script>
+      // 사용자 이름 불러오기
+      async function loadUserId() {
+        try {
+          const response = await fetch(`http://localhost:3000/users/`);
 
-    <scirpt> fetch() </scirpt>
+          if (!response.ok) {
+            throw new Error("유저 조회 실패");
+          }
+
+          const data = await response.json();
+
+          const idVal = data.USER_ID;
+
+          // 여러 요소에 동시에 값 전달
+          const id = document.getElementById("user-id");
+
+          id.innerText = `${idVal}`;
+        } catch (err) {
+          console.error(err);
+          id.innerText = `000`;
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", loadUserId);
+    </script>
   </body>
 </html>

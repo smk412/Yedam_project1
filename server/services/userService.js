@@ -1,7 +1,7 @@
 const userRepository = require("../repositories/userRepository");
 
-async function getUserPoint(userNo) {
-  return await userRepository.findPointByUserNo(userNo);
+async function getUserInfo(userNo) {
+  return await userRepository.findUserInfo(userNo);
 }
 
-module.exports = { getUserPoint };
+module.exports = { getUserInfo };

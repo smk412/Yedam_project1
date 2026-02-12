@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userController");
 
-router.get("/:userNo/point", userController.getUserPoint);
+//사용자 정보 조회
+router.get("/", userController.getUserInfo);
 
 module.exports = router;
