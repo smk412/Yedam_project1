@@ -151,7 +151,7 @@
       // 사용자 이름 불러오기
       async function loadUserId() {
         try {
-          const response = await fetch(`http://localhost:3000/users/`);
+          const response = await fetch(`/users/`);
 
           if (!response.ok) {
             throw new Error("유저 조회 실패");

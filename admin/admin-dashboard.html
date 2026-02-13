@@ -1,625 +1,668 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>관리자 대시보드 - Private Game Platform</title>
-  <link rel="stylesheet" href="common.css">
-  <style>
-    .admin-header {
-      background-color: var(--bg-secondary);
-      border-bottom: 2px solid var(--accent-danger);
-      padding: var(--spacing-md) 0;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>관리자 대시보드 - Private Game Platform</title>
+    <link rel="stylesheet" href="/common.css" />
+    <style>
+      .admin-header {
+        background-color: var(--bg-secondary);
+        border-bottom: 2px solid var(--accent-danger);
+        padding: var(--spacing-md) 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
 
-    .admin-logo {
-      color: var(--accent-danger);
-      text-shadow: var(--shadow-neon-pink);
-    }
+      .admin-logo {
+        color: var(--accent-danger);
+        text-shadow: var(--shadow-neon-pink);
+      }
 
-    .admin-badge {
-      background-color: var(--accent-danger);
-      color: white;
-      padding: 4px 12px;
-      border-radius: var(--radius-sm);
-      font-size: 12px;
-      font-weight: 700;
-      margin-left: var(--spacing-sm);
-    }
+      .admin-badge {
+        background-color: var(--accent-danger);
+        color: white;
+        padding: 4px 12px;
+        border-radius: var(--radius-sm);
+        font-size: 12px;
+        font-weight: 700;
+        margin-left: var(--spacing-sm);
+      }
 
-    .main-content {
-      padding: var(--spacing-xl) 0;
-      min-height: calc(100vh - 200px);
-    }
+      .main-content {
+        padding: var(--spacing-xl) 0;
+        min-height: calc(100vh - 200px);
+      }
 
-    .dashboard-title {
-      font-size: 32px;
-      margin-bottom: var(--spacing-xl);
-    }
+      .dashboard-title {
+        font-size: 32px;
+        margin-bottom: var(--spacing-xl);
+      }
 
-    .stats-overview {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: var(--spacing-lg);
-      margin-bottom: var(--spacing-xl);
-    }
-
-    .stat-card {
-      background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
-      padding: var(--spacing-lg);
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border-color);
-      position: relative;
-      overflow: hidden;
-      transition: var(--transition-normal);
-    }
-
-    .stat-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-lg);
-    }
-
-    .stat-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 4px;
-      height: 100%;
-    }
-
-    .stat-card.primary::before {
-      background: var(--accent-primary);
-    }
-
-    .stat-card.secondary::before {
-      background: var(--accent-secondary);
-    }
-
-    .stat-card.danger::before {
-      background: var(--accent-danger);
-    }
-
-    .stat-card.warning::before {
-      background: var(--accent-warning);
-    }
-
-    .stat-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: var(--spacing-md);
-    }
-
-    .stat-icon {
-      font-size: 24px;
-    }
-
-    .stat-trend {
-      font-size: 12px;
-      padding: 4px 8px;
-      border-radius: var(--radius-sm);
-      font-weight: 600;
-    }
-
-    .stat-trend.up {
-      background-color: rgba(0, 255, 136, 0.2);
-      color: var(--accent-primary);
-    }
-
-    .stat-trend.down {
-      background-color: rgba(255, 0, 110, 0.2);
-      color: var(--accent-danger);
-    }
-
-    .stat-label {
-      font-size: 14px;
-      color: var(--text-secondary);
-      margin-bottom: var(--spacing-sm);
-    }
-
-    .stat-value {
-      font-size: 36px;
-      font-weight: 700;
-      color: var(--text-primary);
-    }
-
-    .stat-card.primary .stat-value {
-      color: var(--accent-primary);
-    }
-
-    .stat-card.danger .stat-value {
-      color: var(--accent-danger);
-    }
-
-    .charts-section {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: var(--spacing-lg);
-      margin-bottom: var(--spacing-xl);
-    }
-
-    .chart-card {
-      background-color: var(--bg-secondary);
-      border-radius: var(--radius-lg);
-      padding: var(--spacing-lg);
-      border: 1px solid var(--border-color);
-    }
-
-    .chart-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: var(--spacing-lg);
-      padding-bottom: var(--spacing-md);
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .chart-title {
-      font-size: 18px;
-      font-weight: 600;
-    }
-
-    .chart-placeholder {
-      height: 300px;
-      background: linear-gradient(to top, var(--bg-tertiary), transparent);
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-muted);
-      font-size: 14px;
-    }
-
-    .pending-section {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--spacing-lg);
-      margin-bottom: var(--spacing-xl);
-    }
-
-    .pending-card {
-      background-color: var(--bg-secondary);
-      border-radius: var(--radius-lg);
-      padding: var(--spacing-lg);
-      border: 1px solid var(--border-color);
-    }
-
-    .pending-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: var(--spacing-md);
-      padding-bottom: var(--spacing-md);
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .pending-title {
-      font-size: 18px;
-      font-weight: 600;
-    }
-
-    .pending-count {
-      background-color: var(--accent-danger);
-      color: white;
-      padding: 4px 12px;
-      border-radius: var(--radius-sm);
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .pending-item {
-      padding: var(--spacing-md);
-      background-color: var(--bg-tertiary);
-      border-radius: var(--radius-md);
-      margin-bottom: var(--spacing-sm);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .pending-item:last-child {
-      margin-bottom: 0;
-    }
-
-    .pending-info {
-      flex: 1;
-    }
-
-    .pending-user {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: var(--spacing-xs);
-    }
-
-    .pending-details {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .pending-actions {
-      display: flex;
-      gap: var(--spacing-sm);
-    }
-
-    .action-icon-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: var(--radius-sm);
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: var(--transition-fast);
-      font-size: 16px;
-    }
-
-    .action-icon-btn.approve {
-      background-color: rgba(0, 255, 136, 0.2);
-      color: var(--accent-primary);
-    }
-
-    .action-icon-btn.approve:hover {
-      background-color: var(--accent-primary);
-      color: var(--bg-primary);
-    }
-
-    .action-icon-btn.reject {
-      background-color: rgba(255, 0, 110, 0.2);
-      color: var(--accent-danger);
-    }
-
-    .action-icon-btn.reject:hover {
-      background-color: var(--accent-danger);
-      color: white;
-    }
-
-    .game-status-card {
-      background-color: var(--bg-secondary);
-      border-radius: var(--radius-lg);
-      padding: var(--spacing-lg);
-      border: 1px solid var(--border-color);
-    }
-
-    .status-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: var(--spacing-md);
-      background-color: var(--bg-tertiary);
-      border-radius: var(--radius-md);
-      margin-bottom: var(--spacing-md);
-    }
-
-    .status-row:last-child {
-      margin-bottom: 0;
-    }
-
-    .status-label {
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .toggle-switch {
-      position: relative;
-      width: 60px;
-      height: 30px;
-      background-color: var(--bg-hover);
-      border-radius: 15px;
-      cursor: pointer;
-      transition: var(--transition-fast);
-    }
-
-    .toggle-switch.active {
-      background-color: var(--accent-primary);
-    }
-
-    .toggle-switch::after {
-      content: '';
-      position: absolute;
-      top: 3px;
-      left: 3px;
-      width: 24px;
-      height: 24px;
-      background-color: white;
-      border-radius: 50%;
-      transition: var(--transition-fast);
-    }
-
-    .toggle-switch.active::after {
-      left: 33px;
-    }
-
-    @media (max-width: 1199px) {
       .stats-overview {
-        grid-template-columns: repeat(2, 1fr);
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--spacing-lg);
+        margin-bottom: var(--spacing-xl);
+      }
+
+      .stat-card {
+        background: linear-gradient(
+          135deg,
+          var(--bg-secondary),
+          var(--bg-tertiary)
+        );
+        padding: var(--spacing-lg);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-color);
+        position: relative;
+        overflow: hidden;
+        transition: var(--transition-normal);
+      }
+
+      .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+      }
+
+      .stat-card.primary::before {
+        background: var(--accent-primary);
+      }
+
+      .stat-card.secondary::before {
+        background: var(--accent-secondary);
+      }
+
+      .stat-card.danger::before {
+        background: var(--accent-danger);
+      }
+
+      .stat-card.warning::before {
+        background: var(--accent-warning);
+      }
+
+      .stat-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-md);
+      }
+
+      .stat-icon {
+        font-size: 24px;
+      }
+
+      .stat-trend {
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+      }
+
+      .stat-trend.up {
+        background-color: rgba(0, 255, 136, 0.2);
+        color: var(--accent-primary);
+      }
+
+      .stat-trend.down {
+        background-color: rgba(255, 0, 110, 0.2);
+        color: var(--accent-danger);
+      }
+
+      .stat-label {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-bottom: var(--spacing-sm);
+      }
+
+      .stat-value {
+        font-size: 36px;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+
+      .stat-card.primary .stat-value {
+        color: var(--accent-primary);
+      }
+
+      .stat-card.danger .stat-value {
+        color: var(--accent-danger);
       }
 
       .charts-section {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: var(--spacing-lg);
+        margin-bottom: var(--spacing-xl);
+      }
+
+      .chart-card {
+        background-color: var(--bg-secondary);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-lg);
+        border: 1px solid var(--border-color);
+      }
+
+      .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-lg);
+        padding-bottom: var(--spacing-md);
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .chart-title {
+        font-size: 18px;
+        font-weight: 600;
+      }
+
+      .chart-placeholder {
+        height: 300px;
+        background: linear-gradient(to top, var(--bg-tertiary), transparent);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-size: 14px;
       }
 
       .pending-section {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-lg);
+        margin-bottom: var(--spacing-xl);
       }
-    }
 
-    @media (max-width: 767px) {
-      .stats-overview {
-        grid-template-columns: 1fr;
+      .pending-card {
+        background-color: var(--bg-secondary);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-lg);
+        border: 1px solid var(--border-color);
       }
-    }
-  </style>
-</head>
-<body>
-  <!-- 관리자 헤더 -->
-  <header class="admin-header">
-    <div class="container">
-      <div class="header-content">
-        <div>
-          <a href="admin-dashboard.html" class="logo admin-logo">⚙️ PGP Admin</a>
-          <span class="admin-badge">ADMIN</span>
-        </div>
-        <nav class="nav">
-          <a href="admin-dashboard.html">대시보드</a>
-          <a href="admin-users.html">회원 관리</a>
-          <a href="admin-withdrawals.html">출금 관리</a>
-          <a href="admin-game-settings.html">게임 설정</a>
-          <a href="admin-statistics.html">통계</a>
-        </nav>
-        <div class="user-info">
-          <span style="color: var(--text-secondary); margin-right: var(--spacing-md);">
-            관리자: admin
-          </span>
-          <a href="admin-login.html" class="btn btn-sm btn-danger">로그아웃</a>
+
+      .pending-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-md);
+        padding-bottom: var(--spacing-md);
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .pending-title {
+        font-size: 18px;
+        font-weight: 600;
+      }
+
+      .pending-count {
+        background-color: var(--accent-danger);
+        color: white;
+        padding: 4px 12px;
+        border-radius: var(--radius-sm);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .pending-item {
+        padding: var(--spacing-md);
+        background-color: var(--bg-tertiary);
+        border-radius: var(--radius-md);
+        margin-bottom: var(--spacing-sm);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .pending-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .pending-info {
+        flex: 1;
+      }
+
+      .pending-user {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-xs);
+      }
+
+      .pending-details {
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+
+      .pending-actions {
+        display: flex;
+        gap: var(--spacing-sm);
+      }
+
+      .action-icon-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-sm);
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition-fast);
+        font-size: 16px;
+      }
+
+      .action-icon-btn.approve {
+        background-color: rgba(0, 255, 136, 0.2);
+        color: var(--accent-primary);
+      }
+
+      .action-icon-btn.approve:hover {
+        background-color: var(--accent-primary);
+        color: var(--bg-primary);
+      }
+
+      .action-icon-btn.reject {
+        background-color: rgba(255, 0, 110, 0.2);
+        color: var(--accent-danger);
+      }
+
+      .action-icon-btn.reject:hover {
+        background-color: var(--accent-danger);
+        color: white;
+      }
+
+      .game-status-card {
+        background-color: var(--bg-secondary);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-lg);
+        border: 1px solid var(--border-color);
+      }
+
+      .status-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--spacing-md);
+        background-color: var(--bg-tertiary);
+        border-radius: var(--radius-md);
+        margin-bottom: var(--spacing-md);
+      }
+
+      .status-row:last-child {
+        margin-bottom: 0;
+      }
+
+      .status-label {
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .toggle-switch {
+        position: relative;
+        width: 60px;
+        height: 30px;
+        background-color: var(--bg-hover);
+        border-radius: 15px;
+        cursor: pointer;
+        transition: var(--transition-fast);
+      }
+
+      .toggle-switch.active {
+        background-color: var(--accent-primary);
+      }
+
+      .toggle-switch::after {
+        content: "";
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 24px;
+        height: 24px;
+        background-color: white;
+        border-radius: 50%;
+        transition: var(--transition-fast);
+      }
+
+      .toggle-switch.active::after {
+        left: 33px;
+      }
+
+      @media (max-width: 1199px) {
+        .stats-overview {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .charts-section {
+          grid-template-columns: 1fr;
+        }
+
+        .pending-section {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 767px) {
+        .stats-overview {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 관리자 헤더 -->
+    <header class="admin-header">
+      <div class="container">
+        <div class="header-content">
+          <div>
+            <a href="admin-dashboard.html" class="logo admin-logo"
+              >⚙️ PGP Admin</a
+            >
+            <span class="admin-badge">ADMIN</span>
+          </div>
+          <nav class="nav">
+            <a href="admin-dashboard.html">대시보드</a>
+            <a href="admin-users.html">회원 관리</a>
+            <a href="admin-withdrawals.html">출금 관리</a>
+            <a href="admin-game-settings.html">게임 설정</a>
+            <a href="admin-statistics.html">통계</a>
+          </nav>
+          <div class="user-info">
+            <span
+              style="
+                color: var(--text-secondary);
+                margin-right: var(--spacing-md);
+              "
+            >
+              관리자: admin
+            </span>
+            <a href="admin-login.html" class="btn btn-sm btn-danger"
+              >로그아웃</a
+            >
+          </div>
         </div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <!-- 메인 컨텐츠 -->
-  <main class="main-content">
-    <div class="container">
-      <h1 class="dashboard-title">관리자 대시보드</h1>
+    <!-- 메인 컨텐츠 -->
+    <main class="main-content">
+      <div class="container">
+        <h1 class="dashboard-title">관리자 대시보드</h1>
 
-      <!-- 통계 오버뷰 -->
-      <div class="stats-overview">
-        <div class="stat-card primary">
-          <div class="stat-header">
-            <div class="stat-icon">👥</div>
-            <div class="stat-trend up">+12%</div>
+        <!-- 통계 오버뷰 -->
+        <div class="stats-overview">
+          <div class="stat-card primary">
+            <div class="stat-header">
+              <div class="stat-icon">👥</div>
+              <div class="stat-trend up">+12%</div>
+            </div>
+            <div class="stat-label">총 회원 수</div>
+            <div class="stat-value">1,248</div>
           </div>
-          <div class="stat-label">총 회원 수</div>
-          <div class="stat-value">1,248</div>
-        </div>
 
-        <div class="stat-card secondary">
-          <div class="stat-header">
-            <div class="stat-icon">🆕</div>
-            <div class="stat-trend up">+5</div>
+          <div class="stat-card secondary">
+            <div class="stat-header">
+              <div class="stat-icon">🆕</div>
+              <div class="stat-trend up">+5</div>
+            </div>
+            <div class="stat-label">신규 가입 (오늘)</div>
+            <div class="stat-value">8</div>
           </div>
-          <div class="stat-label">신규 가입 (오늘)</div>
-          <div class="stat-value">8</div>
-        </div>
 
-        <div class="stat-card warning">
-          <div class="stat-header">
-            <div class="stat-icon">💰</div>
-            <div class="stat-trend up">+8%</div>
+          <div class="stat-card warning">
+            <div class="stat-header">
+              <div class="stat-icon">💰</div>
+              <div class="stat-trend up">+8%</div>
+            </div>
+            <div class="stat-label">오늘 베팅액</div>
+            <div class="stat-value">5.2M</div>
           </div>
-          <div class="stat-label">오늘 베팅액</div>
-          <div class="stat-value">5.2M</div>
-        </div>
 
-        <div class="stat-card danger">
-          <div class="stat-header">
-            <div class="stat-icon">📈</div>
-            <div class="stat-trend up">+15%</div>
+          <div class="stat-card danger">
+            <div class="stat-header">
+              <div class="stat-icon">📈</div>
+              <div class="stat-trend up">+15%</div>
+            </div>
+            <div class="stat-label">하우스 수익 (오늘)</div>
+            <div class="stat-value">520K</div>
           </div>
-          <div class="stat-label">하우스 수익 (오늘)</div>
-          <div class="stat-value">520K</div>
-        </div>
 
-        <div class="stat-card">
-          <div class="stat-header">
-            <div class="stat-icon">⏳</div>
-            <div class="stat-trend">-</div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon">⏳</div>
+              <div class="stat-trend">-</div>
+            </div>
+            <div class="stat-label">가입 승인 대기</div>
+            <div class="stat-value">3</div>
           </div>
-          <div class="stat-label">가입 승인 대기</div>
-          <div class="stat-value">3</div>
-        </div>
 
-        <div class="stat-card">
-          <div class="stat-header">
-            <div class="stat-icon">💸</div>
-            <div class="stat-trend">-</div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon">💸</div>
+              <div class="stat-trend">-</div>
+            </div>
+            <div class="stat-label">출금 승인 대기</div>
+            <div class="stat-value">7</div>
           </div>
-          <div class="stat-label">출금 승인 대기</div>
-          <div class="stat-value">7</div>
-        </div>
 
-        <div class="stat-card primary">
-          <div class="stat-header">
-            <div class="stat-icon">🔌</div>
-            <div class="stat-trend">-</div>
+          <div class="stat-card primary">
+            <div class="stat-header">
+              <div class="stat-icon">🔌</div>
+              <div class="stat-trend">-</div>
+            </div>
+            <div class="stat-label">현재 접속자</div>
+            <div class="stat-value">23</div>
           </div>
-          <div class="stat-label">현재 접속자</div>
-          <div class="stat-value">23</div>
-        </div>
 
-        <div class="stat-card">
-          <div class="stat-header">
-            <div class="stat-icon">🎮</div>
-            <div class="stat-trend">-</div>
-          </div>
-          <div class="stat-label">게임 상태</div>
-          <div class="stat-value" style="font-size: 24px; color: var(--accent-primary);">운영 중</div>
-        </div>
-      </div>
-
-      <!-- 차트 섹션 -->
-      <div class="charts-section">
-        <div class="chart-card">
-          <div class="chart-header">
-            <h3 class="chart-title">일별 베팅액 추이 (최근 7일)</h3>
-            <select class="form-select" style="width: auto; padding: 8px 16px;">
-              <option>최근 7일</option>
-              <option>최근 30일</option>
-              <option>최근 90일</option>
-            </select>
-          </div>
-          <div class="chart-placeholder">
-            📊 차트 영역 (Chart.js 또는 다른 라이브러리 사용)
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon">🎮</div>
+              <div class="stat-trend">-</div>
+            </div>
+            <div class="stat-label">게임 상태</div>
+            <div
+              class="stat-value"
+              style="font-size: 24px; color: var(--accent-primary)"
+            >
+              운영 중
+            </div>
           </div>
         </div>
 
-        <div class="chart-card">
-          <div class="chart-header">
-            <h3 class="chart-title">승률 분포</h3>
+        <!-- 차트 섹션 -->
+        <div class="charts-section">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3 class="chart-title">일별 베팅액 추이 (최근 7일)</h3>
+              <select
+                class="form-select"
+                style="width: auto; padding: 8px 16px"
+              >
+                <option>최근 7일</option>
+                <option>최근 30일</option>
+                <option>최근 90일</option>
+              </select>
+            </div>
+            <div class="chart-placeholder">
+              📊 차트 영역 (Chart.js 또는 다른 라이브러리 사용)
+            </div>
           </div>
-          <div class="chart-placeholder" style="height: 300px;">
-            📊 파이 차트 영역
+
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3 class="chart-title">승률 분포</h3>
+            </div>
+            <div class="chart-placeholder" style="height: 300px">
+              📊 파이 차트 영역
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- 승인 대기 섹션 -->
-      <div class="pending-section">
-        <div class="pending-card">
+        <!-- 승인 대기 섹션 -->
+        <div class="pending-section">
+          <div class="pending-card">
+            <div class="pending-header">
+              <h3 class="pending-title">가입 승인 대기</h3>
+              <span class="pending-count">3</span>
+            </div>
+
+            <div class="pending-item">
+              <div class="pending-info">
+                <div class="pending-user">user123</div>
+                <div class="pending-details">
+                  홍길동 · hong@email.com · 2025.02.06 14:30
+                </div>
+              </div>
+              <div class="pending-actions">
+                <button class="action-icon-btn approve" title="승인">✓</button>
+                <button class="action-icon-btn reject" title="거부">✕</button>
+              </div>
+            </div>
+
+            <div class="pending-item">
+              <div class="pending-info">
+                <div class="pending-user">player456</div>
+                <div class="pending-details">
+                  김철수 · kim@email.com · 2025.02.06 13:15
+                </div>
+              </div>
+              <div class="pending-actions">
+                <button class="action-icon-btn approve" title="승인">✓</button>
+                <button class="action-icon-btn reject" title="거부">✕</button>
+              </div>
+            </div>
+
+            <div class="pending-item">
+              <div class="pending-info">
+                <div class="pending-user">game789</div>
+                <div class="pending-details">
+                  이영희 · lee@email.com · 2025.02.06 11:20
+                </div>
+              </div>
+              <div class="pending-actions">
+                <button class="action-icon-btn approve" title="승인">✓</button>
+                <button class="action-icon-btn reject" title="거부">✕</button>
+              </div>
+            </div>
+
+            <a
+              href="admin-users.html"
+              class="btn btn-outline btn-sm mt-md"
+              style="width: 100%"
+            >
+              전체 보기 →
+            </a>
+          </div>
+
+          <div class="pending-card">
+            <div class="pending-header">
+              <h3 class="pending-title">출금 승인 대기</h3>
+              <span class="pending-count">7</span>
+            </div>
+
+            <div class="pending-item">
+              <div class="pending-info">
+                <div class="pending-user">user123 · 50,000원</div>
+                <div class="pending-details">KB국민은행 · 2025.02.06 15:00</div>
+              </div>
+              <div class="pending-actions">
+                <button class="action-icon-btn approve" title="승인">✓</button>
+                <button class="action-icon-btn reject" title="거부">✕</button>
+              </div>
+            </div>
+
+            <div class="pending-item">
+              <div class="pending-info">
+                <div class="pending-user">player456 · 30,000원</div>
+                <div class="pending-details">신한은행 · 2025.02.06 14:20</div>
+              </div>
+              <div class="pending-actions">
+                <button class="action-icon-btn approve" title="승인">✓</button>
+                <button class="action-icon-btn reject" title="거부">✕</button>
+              </div>
+            </div>
+
+            <div class="pending-item">
+              <div class="pending-info">
+                <div class="pending-user">game789 · 100,000원</div>
+                <div class="pending-details">카카오뱅크 · 2025.02.06 13:45</div>
+              </div>
+              <div class="pending-actions">
+                <button class="action-icon-btn approve" title="승인">✓</button>
+                <button class="action-icon-btn reject" title="거부">✕</button>
+              </div>
+            </div>
+
+            <a
+              href="admin-withdrawals.html"
+              class="btn btn-outline btn-sm mt-md"
+              style="width: 100%"
+            >
+              전체 보기 →
+            </a>
+          </div>
+        </div>
+
+        <!-- 게임 상태 -->
+        <div class="game-status-card">
           <div class="pending-header">
-            <h3 class="pending-title">가입 승인 대기</h3>
-            <span class="pending-count">3</span>
+            <h3 class="pending-title">게임 빠른 설정</h3>
           </div>
 
-          <div class="pending-item">
-            <div class="pending-info">
-              <div class="pending-user">user123</div>
-              <div class="pending-details">홍길동 · hong@email.com · 2025.02.06 14:30</div>
-            </div>
-            <div class="pending-actions">
-              <button class="action-icon-btn approve" title="승인">✓</button>
-              <button class="action-icon-btn reject" title="거부">✕</button>
-            </div>
+          <div class="status-row">
+            <div class="status-label">🎮 게임 운영 상태</div>
+            <div class="toggle-switch active" onclick="toggleGame(this)"></div>
           </div>
 
-          <div class="pending-item">
-            <div class="pending-info">
-              <div class="pending-user">player456</div>
-              <div class="pending-details">김철수 · kim@email.com · 2025.02.06 13:15</div>
-            </div>
-            <div class="pending-actions">
-              <button class="action-icon-btn approve" title="승인">✓</button>
-              <button class="action-icon-btn reject" title="거부">✕</button>
+          <div class="status-row">
+            <div class="status-label">💸 배당률</div>
+            <div style="color: var(--accent-primary); font-weight: 700">
+              1.95배
             </div>
           </div>
 
-          <div class="pending-item">
-            <div class="pending-info">
-              <div class="pending-user">game789</div>
-              <div class="pending-details">이영희 · lee@email.com · 2025.02.06 11:20</div>
-            </div>
-            <div class="pending-actions">
-              <button class="action-icon-btn approve" title="승인">✓</button>
-              <button class="action-icon-btn reject" title="거부">✕</button>
+          <div class="status-row">
+            <div class="status-label">📊 오늘 게임 참여</div>
+            <div style="color: var(--text-primary); font-weight: 700">
+              324회
             </div>
           </div>
 
-          <a href="admin-users.html" class="btn btn-outline btn-sm mt-md" style="width: 100%;">
-            전체 보기 →
+          <a
+            href="admin-game-settings.html"
+            class="btn btn-secondary btn-sm mt-md"
+            style="width: 100%"
+          >
+            상세 설정 →
           </a>
         </div>
-
-        <div class="pending-card">
-          <div class="pending-header">
-            <h3 class="pending-title">출금 승인 대기</h3>
-            <span class="pending-count">7</span>
-          </div>
-
-          <div class="pending-item">
-            <div class="pending-info">
-              <div class="pending-user">user123 · 50,000원</div>
-              <div class="pending-details">KB국민은행 · 2025.02.06 15:00</div>
-            </div>
-            <div class="pending-actions">
-              <button class="action-icon-btn approve" title="승인">✓</button>
-              <button class="action-icon-btn reject" title="거부">✕</button>
-            </div>
-          </div>
-
-          <div class="pending-item">
-            <div class="pending-info">
-              <div class="pending-user">player456 · 30,000원</div>
-              <div class="pending-details">신한은행 · 2025.02.06 14:20</div>
-            </div>
-            <div class="pending-actions">
-              <button class="action-icon-btn approve" title="승인">✓</button>
-              <button class="action-icon-btn reject" title="거부">✕</button>
-            </div>
-          </div>
-
-          <div class="pending-item">
-            <div class="pending-info">
-              <div class="pending-user">game789 · 100,000원</div>
-              <div class="pending-details">카카오뱅크 · 2025.02.06 13:45</div>
-            </div>
-            <div class="pending-actions">
-              <button class="action-icon-btn approve" title="승인">✓</button>
-              <button class="action-icon-btn reject" title="거부">✕</button>
-            </div>
-          </div>
-
-          <a href="admin-withdrawals.html" class="btn btn-outline btn-sm mt-md" style="width: 100%;">
-            전체 보기 →
-          </a>
-        </div>
       </div>
+    </main>
 
-      <!-- 게임 상태 -->
-      <div class="game-status-card">
-        <div class="pending-header">
-          <h3 class="pending-title">게임 빠른 설정</h3>
-        </div>
-
-        <div class="status-row">
-          <div class="status-label">🎮 게임 운영 상태</div>
-          <div class="toggle-switch active" onclick="toggleGame(this)"></div>
-        </div>
-
-        <div class="status-row">
-          <div class="status-label">💸 배당률</div>
-          <div style="color: var(--accent-primary); font-weight: 700;">1.95배</div>
-        </div>
-
-        <div class="status-row">
-          <div class="status-label">📊 오늘 게임 참여</div>
-          <div style="color: var(--text-primary); font-weight: 700;">324회</div>
-        </div>
-
-        <a href="admin-game-settings.html" class="btn btn-secondary btn-sm mt-md" style="width: 100%;">
-          상세 설정 →
-        </a>
+    <!-- 푸터 -->
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2025 Private Game Platform Admin. All rights reserved.</p>
       </div>
-    </div>
-  </main>
+    </footer>
 
-  <!-- 푸터 -->
-  <footer class="footer">
-    <div class="container">
-      <p>&copy; 2025 Private Game Platform Admin. All rights reserved.</p>
-    </div>
-  </footer>
-
-  <script>
-    function toggleGame(element) {
-      element.classList.toggle('active');
-      const isActive = element.classList.contains('active');
-      alert(isActive ? '게임을 활성화했습니다.' : '게임을 비활성화했습니다.');
-    }
-  </script>
-</body>
+    <script>
+      function toggleGame(element) {
+        element.classList.toggle("active");
+        const isActive = element.classList.contains("active");
+        alert(isActive ? "게임을 활성화했습니다." : "게임을 비활성화했습니다.");
+      }
+    </script>
+  </body>
 </html>

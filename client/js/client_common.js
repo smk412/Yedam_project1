@@ -6,7 +6,7 @@ window.userState = {
 // ========= 유저 보유 포인트 불러오기 ==========
 async function loadUserPoint() {
   try {
-    const response = await fetch(`http://localhost:3000/users/`);
+    const response = await fetch(`/users/`);
 
     if (!response.ok) {
       throw new Error("유저 조회 실패");
@@ -18,7 +18,7 @@ async function loadUserPoint() {
     window.userState.point = data.POINT;
 
     //숫자 콤마 처리
-    const formatted = point.toLocaleString();
+    const formatted = window.userState.point.toLocaleString();
 
     // 여러 요소에 동시에 값 전달
     const elements = document.querySelectorAll(".point-value");
@@ -28,7 +28,9 @@ async function loadUserPoint() {
     });
   } catch (err) {
     console.error(err);
-    document.querySelectorAll(".point-value").innerText = `💰 조회 실패`;
+    document.querySelectorAll(".point-value").forEach((el) => {
+      innerText = `💰 조회 실패`;
+    });
   }
 }
 
@@ -37,7 +39,7 @@ async function loadHeader() {
   const headerContainer = document.getElementById("header");
   if (!headerContainer) return;
 
-  const response = await fetch("components/header.html");
+  const response = await fetch("/components/header.html");
   const html = await response.text();
   headerContainer.innerHTML = html;
 }

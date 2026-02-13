@@ -61,35 +61,21 @@ async function playGame(req, res) {
     });
   }
 
-  let conn;
-
   try {
-    conn = await oracledb.getConnection();
+    const result = await gameService.playDiceGame(userNo, betAmount, choice);
 
-    // 현재 포인트 조회
-    const result = await conn.execute(
-      `SELECT point FROM users WHERE user_no = :userNo`,
-      { userNo },
-    );
-
-    const currentPoint = result.rows[0][0];
-
-    if (betAmount > currentPoint) {
+    return res.json(result);
+  } catch (err) {
+    if (err.message === "INSUFFICIENT_POINT") {
       return res.status(400).json({
         message: "포인트 부족",
       });
     }
 
-    // 일단 보류한 코드
-    return res.json({
-      message: "베팅 요청 정상 처리 (아직 게임 로직 없음)",
-      currentPoint,
-    });
-  } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: "서버 오류" });
-  } finally {
-    if (connection) await connection.close();
+    return res.status(500).json({
+      message: "서버 오류",
+    });
   }
 }
 
